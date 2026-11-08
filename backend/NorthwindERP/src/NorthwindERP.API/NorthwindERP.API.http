@@ -1,0 +1,6 @@
+@NorthwindERP.API_HostAddress = http://localhost:5280
+
+GET {{NorthwindERP.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

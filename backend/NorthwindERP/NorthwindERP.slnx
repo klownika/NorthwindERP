@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/NorthwindERP.API/NorthwindERP.API.csproj" />
+    <Project Path="src/NorthwindERP.Core/NorthwindERP.Core.csproj" />
+    <Project Path="src/NorthwindERP.Infrastructure/NorthwindERP.Infrastructure.csproj" />
+  </Folder>
+</Solution>
