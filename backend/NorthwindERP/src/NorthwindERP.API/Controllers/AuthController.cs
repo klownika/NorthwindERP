@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NorthwindERP.API.DTOs;
+using NorthwindERP.API.Extensions;
 using NorthwindERP.API.Mappings;
 using NorthwindERP.Core.Interfaces;
+using NorthwindERP.Core.Models;
 
 namespace NorthwindERP.API.Controllers;
 
@@ -28,4 +30,14 @@ public class AuthController : ControllerBase
         var result = await _auth.LoginAsync(request.Username, request.Password, ct);
         return Ok(result.ToDto());
     }
+
+    /// <summary>Devuelve los datos del usuario dueño del token.</summary>
+    [HttpGet("me")]
+    [Authorize]
+    public ActionResult<CurrentUserDto> Me()
+        => Ok(new CurrentUserDto(
+            User.GetUserId(),
+            User.FindFirst(CustomClaims.Username)?.Value,
+            User.FindFirst(CustomClaims.Role)?.Value,
+            User.GetEmployeeIdOrNull()));
 }

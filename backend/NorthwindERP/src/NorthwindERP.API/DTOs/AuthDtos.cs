@@ -16,3 +16,5 @@ public record LoginResponse(
     string? Role,
     int EmployeeId,
     bool MustChangePassword);
+
+public record CurrentUserDto(int UserId, string? Username, string? Role, int? EmployeeId);
