@@ -2,6 +2,7 @@ using NorthwindERP.API.Extensions;
 using NorthwindERP.API.Middlewares;
 using NorthwindERP.Infrastructure;
 using NorthwindERP.Infrastructure.Data;
+using NorthwindERP.Infrastructure.Security;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -25,6 +26,8 @@ app.MapGet("/api/health", async (NorthwindDbContext db, CancellationToken ct) =>
             : Results.Problem("No se pudo conectar a la base de datos. Revisa ConnectionStrings:Supabase.", statusCode: 503))
     .AllowAnonymous()
     .WithTags("Health");
+
+await app.Services.SeedAdminAsync(app.Configuration, app.Logger);
 
 app.Run();
 
