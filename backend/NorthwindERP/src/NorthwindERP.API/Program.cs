@@ -1,4 +1,5 @@
 using NorthwindERP.API.Extensions;
+using NorthwindERP.API.Middlewares;
 using NorthwindERP.Infrastructure;
 using NorthwindERP.Infrastructure.Data;
 
@@ -12,6 +13,7 @@ builder.Services.AddSwaggerWithJwt();
 
 var app = builder.Build();
 
+app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseSwagger();
 app.UseSwaggerUI(c => c.DocumentTitle = "NorthwindERP API");
 app.UseHttpsRedirection();
