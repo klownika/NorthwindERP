@@ -40,4 +40,15 @@ public class AuthController : ControllerBase
             User.FindFirst(CustomClaims.Username)?.Value,
             User.FindFirst(CustomClaims.Role)?.Value,
             User.GetEmployeeIdOrNull()));
+
+    /// <summary>Cambia la contraseña del usuario del token y desactiva MustChangePassword.</summary>
+    [HttpPost("change-password")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request, CancellationToken ct)
+    {
+        await _auth.ChangePasswordAsync(User.GetUserId(), request.CurrentPassword, request.NewPassword, ct);
+        return NoContent();
+    }
 }

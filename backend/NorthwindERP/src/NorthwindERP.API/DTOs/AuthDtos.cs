@@ -18,3 +18,11 @@ public record LoginResponse(
     bool MustChangePassword);
 
 public record CurrentUserDto(int UserId, string? Username, string? Role, int? EmployeeId);
+
+public class ChangePasswordRequest
+{
+    [Required] public string CurrentPassword { get; set; } = string.Empty;
+
+    [Required, MinLength(8)]
+    public string NewPassword { get; set; } = string.Empty;
+}
