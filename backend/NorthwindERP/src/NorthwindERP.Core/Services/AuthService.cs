@@ -1,3 +1,4 @@
+using NorthwindERP.Core.Exceptions;
 using NorthwindERP.Core.Interfaces;
 using NorthwindERP.Core.Models;
 
@@ -39,5 +40,22 @@ public class AuthService : IAuthService
             user.Role?.RoleName,
             user.EmployeeId,
             user.MustChangePassword);
+    }
+
+    public async Task ChangePasswordAsync(int userAccountId, string currentPassword, string newPassword, CancellationToken ct = default)
+    {
+        var user = await _users.GetByIdForUpdateAsync(userAccountId, ct);
+        if (user is null || !user.IsActive)
+            throw new UnauthorizedAccessException("Token inválido.");
+
+        if (!_hasher.Verify(currentPassword, user.PasswordHash))
+            throw new BusinessRuleException("La contraseña actual es incorrecta.");
+
+        if (currentPassword == newPassword)
+            throw new BusinessRuleException("La nueva contraseña debe ser distinta de la actual.");
+
+        user.PasswordHash = _hasher.Hash(newPassword);
+        user.MustChangePassword = false;
+        await _users.SaveChangesAsync(ct);
     }
 }

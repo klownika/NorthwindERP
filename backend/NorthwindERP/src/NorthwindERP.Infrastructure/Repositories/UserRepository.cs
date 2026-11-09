@@ -19,4 +19,9 @@ public class UserRepository : IUserRepository
             .Include(u => u.Role)
             .FirstOrDefaultAsync(u => u.Username.ToLower() == normalized, ct);
     }
+
+    public Task<UserAccount?> GetByIdForUpdateAsync(int userAccountId, CancellationToken ct = default)
+        => _db.UserAccounts.FirstOrDefaultAsync(u => u.UserAccountId == userAccountId, ct);
+
+    public Task SaveChangesAsync(CancellationToken ct = default) => _db.SaveChangesAsync(ct);
 }
