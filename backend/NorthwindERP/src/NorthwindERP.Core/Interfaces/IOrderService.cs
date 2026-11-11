@@ -12,4 +12,6 @@ public interface IOrderService
     Task<OrderDetail?> GetByIdAsync(int orderId, CancellationToken ct);
 
     Task<IReadOnlyList<OrderSummary>> GetAllAsync(OrderFilter filter, CancellationToken ct);
+
+    Task<IReadOnlyList<CustomerOrderHistoryLine>> GetCustomerHistoryAsync(int customerId, CancellationToken ct);
 }

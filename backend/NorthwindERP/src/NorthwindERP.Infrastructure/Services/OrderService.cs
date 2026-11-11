@@ -135,6 +135,20 @@ public sealed class OrderService : IOrderService
             P("to", f.To, NpgsqlDbType.Timestamp),
             P("take", f.Take, NpgsqlDbType.Integer));
 
+    public Task<IReadOnlyList<CustomerOrderHistoryLine>> GetCustomerHistoryAsync(int customerId, CancellationToken ct)
+        => _ds.QueryAsync(
+            "SELECT * FROM get_customer_order_history(@id)",
+            r => new CustomerOrderHistoryLine(
+                r.Get<int>("orderid"),
+                r.Get<DateTime>("orderdate"),
+                r.GetStringOrNull("shippername"),
+                r.GetStringOrNull("employeename") ?? "",
+                r.Get<string>("productname"),
+                r.Get<int>("quantity"),
+                r.Get<decimal>("unitprice"),
+                r.Get<decimal>("linetotal")),
+            ct, P("id", customerId, NpgsqlDbType.Integer));
+
     private static OrderSummary MapSummary(NpgsqlDataReader r) => new(
         r.Get<int>("orderid"),
         r.Get<DateTime>("orderdate"),
