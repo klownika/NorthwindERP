@@ -74,4 +74,12 @@ public class OrdersController : ControllerBase
         var order = await _orders.GetByIdAsync(id, ct);
         return order is null ? NotFound() : Ok(order.ToDto());
     }
+
+    /// <summary>Historial de pedidos de un cliente (función get_customer_order_history). Lista vacía si no tiene pedidos.</summary>
+    [HttpGet("customer/{customerId:int}")]
+    public async Task<ActionResult<IEnumerable<CustomerOrderHistoryDto>>> GetCustomerHistory(int customerId, CancellationToken ct)
+    {
+        var history = await _orders.GetCustomerHistoryAsync(customerId, ct);
+        return Ok(history.Select(h => h.ToDto()));
+    }
 }
