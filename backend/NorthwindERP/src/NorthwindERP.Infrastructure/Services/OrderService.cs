@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Npgsql;
 using NpgsqlTypes;
 using NorthwindERP.Core.Interfaces;
@@ -16,6 +17,61 @@ public sealed class OrderService : IOrderService
     private readonly NpgsqlDataSource _ds;
 
     public OrderService(NpgsqlDataSource ds) => _ds = ds;
+
+    public async Task<CreateOrderResult> CreateWithCustomerAsync(CreateOrderCommand command, CancellationToken ct)
+    {
+        await using var conn = await _ds.OpenConnectionAsync(ct);
+        await using var tx = await conn.BeginTransactionAsync(ct);   // si algo falla, al liberar se hace ROLLBACK
+
+        int customerId;
+        if (command.NewCustomer is { } c)
+        {
+            await using var insert = new NpgsqlCommand(
+                """
+                INSERT INTO Customers (CustomerName, ContactName, Address, City, PostalCode, Country)
+                VALUES (@name, @contact, @address, @city, @postal, @country)
+                RETURNING CustomerID
+                """, conn, tx);
+            insert.Parameters.Add(P("name", c.CustomerName, NpgsqlDbType.Varchar));
+            insert.Parameters.Add(P("contact", c.ContactName, NpgsqlDbType.Varchar));
+            insert.Parameters.Add(P("address", c.Address, NpgsqlDbType.Varchar));
+            insert.Parameters.Add(P("city", c.City, NpgsqlDbType.Varchar));
+            insert.Parameters.Add(P("postal", c.PostalCode, NpgsqlDbType.Varchar));
+            insert.Parameters.Add(P("country", c.Country, NpgsqlDbType.Varchar));
+            customerId = Convert.ToInt32(await insert.ExecuteScalarAsync(ct));
+        }
+        else
+        {
+            customerId = command.CustomerId!.Value;   // el procedimiento valida que exista (NW404)
+        }
+
+        // El procedimiento lee el JSON con product_id / quantity
+        var details = JsonSerializer.Serialize(
+            command.Items.Select(i => new { product_id = i.ProductId, quantity = i.Quantity }));
+
+        int orderId;
+        await using (var call = new NpgsqlCommand(
+            "CALL sp_register_order(@customer, @employee, @warehouse, @details, @shipper, NULL)", conn, tx))
+        {
+            call.Parameters.Add(P("customer", customerId, NpgsqlDbType.Integer));
+            call.Parameters.Add(P("employee", command.EmployeeId, NpgsqlDbType.Integer));
+            call.Parameters.Add(P("warehouse", command.WarehouseId, NpgsqlDbType.Integer));
+            call.Parameters.Add(P("details", details, NpgsqlDbType.Jsonb));
+            call.Parameters.Add(P("shipper", command.ShipperId, NpgsqlDbType.Integer));
+            orderId = Convert.ToInt32(await call.ExecuteScalarAsync(ct));   // valor del INOUT p_order_id
+        }
+
+        decimal total;
+        await using (var sum = new NpgsqlCommand(
+            "SELECT COALESCE(SUM(LineTotal), 0) FROM vw_order_details_extended WHERE OrderID = @id", conn, tx))
+        {
+            sum.Parameters.Add(P("id", orderId, NpgsqlDbType.Integer));
+            total = Convert.ToDecimal(await sum.ExecuteScalarAsync(ct));
+        }
+
+        await tx.CommitAsync(ct);
+        return new CreateOrderResult(orderId, customerId, total);
+    }
 
     public async Task<OrderDetail?> GetByIdAsync(int orderId, CancellationToken ct)
     {
