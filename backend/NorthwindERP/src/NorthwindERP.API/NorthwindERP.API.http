@@ -1,6 +1,36 @@
-@NorthwindERP.API_HostAddress = http://localhost:5280
+@host = http://localhost:5080
+@token = PEGA_AQUI_EL_TOKEN
 
-GET {{NorthwindERP.API_HostAddress}}/weatherforecast/
-Accept: application/json
+### Login: copia el token de la respuesta en @token
+POST {{host}}/api/auth/login
+Content-Type: application/json
 
-###
+{ "username": "admin", "password": "TU_PASSWORD" }
+
+############################ CLIENTES ############################
+
+### Lista de clientes
+GET {{host}}/api/customers
+Authorization: Bearer {{token}}
+
+### Un cliente
+GET {{host}}/api/customers/1
+Authorization: Bearer {{token}}
+
+### Actualizar la dirección de un cliente
+PUT {{host}}/api/customers/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "address": "Obere Str. 58", "city": "Berlin" }
+
+### Body vacío -> 400
+PUT {{host}}/api/customers/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{}
+
+### Cliente inexistente -> 404
+GET {{host}}/api/customers/9999
+Authorization: Bearer {{token}}
