@@ -113,6 +113,28 @@ public sealed class OrderService : IOrderService
         return new OrderDetail(header, lines);
     }
 
+    public Task<IReadOnlyList<OrderSummary>> GetAllAsync(OrderFilter f, CancellationToken ct)
+        => _ds.QueryAsync(
+            """
+            SELECT OrderID, OrderDate, CustomerID, CustomerName, EmployeeName, ShipperName,
+                   COUNT(*)::int  AS LineCount,
+                   SUM(LineTotal) AS OrderTotal
+            FROM vw_order_details_extended
+            WHERE (@customer IS NULL OR CustomerID = @customer)
+              AND (@employee IS NULL OR EmployeeID = @employee)
+              AND (@from     IS NULL OR OrderDate >= @from)
+              AND (@to       IS NULL OR OrderDate <  @to + INTERVAL '1 day')
+            GROUP BY OrderID, OrderDate, CustomerID, CustomerName, EmployeeName, ShipperName
+            ORDER BY OrderDate DESC, OrderID DESC
+            LIMIT @take
+            """,
+            MapSummary, ct,
+            P("customer", f.CustomerId, NpgsqlDbType.Integer),
+            P("employee", f.EmployeeId, NpgsqlDbType.Integer),
+            P("from", f.From, NpgsqlDbType.Timestamp),
+            P("to", f.To, NpgsqlDbType.Timestamp),
+            P("take", f.Take, NpgsqlDbType.Integer));
+
     private static OrderSummary MapSummary(NpgsqlDataReader r) => new(
         r.Get<int>("orderid"),
         r.Get<DateTime>("orderdate"),

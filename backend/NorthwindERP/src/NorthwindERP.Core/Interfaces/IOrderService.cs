@@ -10,4 +10,6 @@ public interface IOrderService
 
     /// <summary>Devuelve null si el pedido no existe.</summary>
     Task<OrderDetail?> GetByIdAsync(int orderId, CancellationToken ct);
+
+    Task<IReadOnlyList<OrderSummary>> GetAllAsync(OrderFilter filter, CancellationToken ct);
 }
