@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NorthwindERP.API.DTOs;
@@ -42,6 +43,26 @@ public class OrdersController : ControllerBase
         var result = await _orders.CreateWithCustomerAsync(command, ct);
 
         return CreatedAtAction(nameof(GetById), new { id = result.OrderId }, result.ToDto());
+    }
+
+    /// <summary>Pedidos con su total, los más recientes primero.</summary>
+    /// <param name="customerId">Filtra por cliente.</param>
+    /// <param name="employeeId">Filtra por empleado.</param>
+    /// <param name="from">Fecha inicial (yyyy-MM-dd).</param>
+    /// <param name="to">Fecha final (yyyy-MM-dd, inclusive).</param>
+    /// <param name="ct">Token de cancelación.</param>
+    /// <param name="take">Máximo de pedidos (1-1000, por defecto 200).</param>
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<OrderSummaryDto>>> GetAll(
+        [FromQuery] int? customerId,
+        [FromQuery] int? employeeId,
+        [FromQuery] DateTime? from,
+        [FromQuery] DateTime? to,
+        CancellationToken ct,
+        [FromQuery, Range(1, 1000)] int take = 200)
+    {
+        var orders = await _orders.GetAllAsync(new OrderFilter(customerId, employeeId, from, to, take), ct);
+        return Ok(orders.Select(o => o.ToDto()));
     }
 
     /// <summary>Un pedido con sus productos y el total por línea (vista vw_order_details_extended).</summary>
