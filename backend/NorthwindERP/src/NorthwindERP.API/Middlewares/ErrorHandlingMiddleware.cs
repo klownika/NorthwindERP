@@ -68,6 +68,11 @@ public class ErrorHandlingMiddleware
         {
             return pg.SqlState switch
             {
+                // Los lanzan nuestros procedimientos, así que su mensaje es seguro de mostrar
+                "NW400" => (400, "Invalid request", pg.MessageText, pg.SqlState),
+                "NW404" => (404, "Resource not found", pg.MessageText, pg.SqlState),
+                "NW409" => (409, "Insufficient stock", pg.MessageText, pg.SqlState),
+
                 PostgresErrorCodes.ForeignKeyViolation => (409, "Related record conflict", null, pg.SqlState),
                 PostgresErrorCodes.UniqueViolation => (409, "Duplicate value", null, pg.SqlState),
                 PostgresErrorCodes.NotNullViolation => (400, "Missing required value", null, pg.SqlState),
