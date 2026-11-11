@@ -6,6 +6,7 @@ using NorthwindERP.Core.Interfaces;
 using NorthwindERP.Infrastructure.Data;
 using NorthwindERP.Infrastructure.Repositories;
 using NorthwindERP.Infrastructure.Security;
+using NorthwindERP.Infrastructure.Services;
 
 namespace NorthwindERP.Infrastructure;
 
@@ -30,6 +31,8 @@ public static class DependencyInjection
         services.AddSingleton<ITokenService, JwtTokenService>();
 
         services.AddScoped<ICustomerRepository, CustomerRepository>();
+
+        services.AddScoped<IOrderService, OrderService>();
 
         return services;
     }
