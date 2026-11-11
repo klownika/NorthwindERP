@@ -21,3 +21,16 @@ public class UpdateCustomerContactRequest
     [StringLength(10)] public string? PostalCode { get; set; }
     [StringLength(15)] public string? Country { get; set; }
 }
+
+/// <summary>Datos del cliente nuevo al crear un pedido (POST /api/orders/with-customer).</summary>
+public class NewCustomerRequest
+{
+    [Required, StringLength(50)]
+    public string CustomerName { get; set; } = string.Empty;
+
+    [StringLength(50)] public string? ContactName { get; set; }
+    [StringLength(50)] public string? Address { get; set; }
+    [StringLength(20)] public string? City { get; set; }
+    [StringLength(10)] public string? PostalCode { get; set; }
+    [StringLength(15)] public string? Country { get; set; }
+}
