@@ -14,4 +14,7 @@ public interface IOrderService
     Task<IReadOnlyList<OrderSummary>> GetAllAsync(OrderFilter filter, CancellationToken ct);
 
     Task<IReadOnlyList<CustomerOrderHistoryLine>> GetCustomerHistoryAsync(int customerId, CancellationToken ct);
+
+    /// <summary>Llama a sp_delete_order: devuelve el stock y borra en cascada. Lanza NW404 si no existe.</summary>
+    Task DeleteAsync(int orderId, int employeeId, CancellationToken ct);
 }

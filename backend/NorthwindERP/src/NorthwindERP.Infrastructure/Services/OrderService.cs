@@ -149,6 +149,14 @@ public sealed class OrderService : IOrderService
                 r.Get<decimal>("linetotal")),
             ct, P("id", customerId, NpgsqlDbType.Integer));
 
+    public async Task DeleteAsync(int orderId, int employeeId, CancellationToken ct)
+    {
+        await using var cmd = _ds.CreateCommand("CALL sp_delete_order(@order, @employee)");
+        cmd.Parameters.Add(P("order", orderId, NpgsqlDbType.Integer));
+        cmd.Parameters.Add(P("employee", employeeId, NpgsqlDbType.Integer));
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
     private static OrderSummary MapSummary(NpgsqlDataReader r) => new(
         r.Get<int>("orderid"),
         r.Get<DateTime>("orderdate"),
