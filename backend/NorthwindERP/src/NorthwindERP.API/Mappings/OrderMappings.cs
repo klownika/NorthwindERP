@@ -15,4 +15,7 @@ public static class OrderMappings
 
     public static OrderDetailDto ToDto(this OrderDetail d) =>
         new(d.Header.ToDto(), d.Lines.Select(l => l.ToDto()).ToList());
+
+    public static CustomerOrderHistoryDto ToDto(this CustomerOrderHistoryLine h) =>
+        new(h.OrderId, h.OrderDate, h.ShipperName, h.EmployeeName, h.ProductName, h.Quantity, h.UnitPrice, h.LineTotal);
 }

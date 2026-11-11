@@ -61,3 +61,13 @@ public record OrderLineDto(
     decimal LineTotal);
 
 public record OrderDetailDto(OrderSummaryDto Order, IReadOnlyList<OrderLineDto> Lines);
+
+public record CustomerOrderHistoryDto(
+    int OrderId,
+    DateTime OrderDate,
+    string? ShipperName,
+    string EmployeeName,
+    string ProductName,
+    int Quantity,
+    decimal UnitPrice,
+    decimal LineTotal);
