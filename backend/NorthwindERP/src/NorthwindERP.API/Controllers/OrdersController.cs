@@ -82,4 +82,19 @@ public class OrdersController : ControllerBase
         var history = await _orders.GetCustomerHistoryAsync(customerId, ct);
         return Ok(history.Select(h => h.ToDto()));
     }
+
+    /// <summary>
+    /// Elimina un pedido (solo Admin). Llama a sp_delete_order: devuelve el stock al almacén de origen,
+    /// registra un INBOUND en el Kardex y borra los detalles por cascada.
+    /// </summary>
+    [HttpDelete("{id:int}")]
+    [Authorize(Roles = Roles.Admin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(int id, CancellationToken ct)
+    {
+        await _orders.DeleteAsync(id, User.GetEmployeeId(), ct);
+        return NoContent();
+    }
 }
