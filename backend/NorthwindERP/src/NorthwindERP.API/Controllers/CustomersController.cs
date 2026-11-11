@@ -24,4 +24,11 @@ public class CustomersController : ControllerBase
         var customers = await _customers.GetAllAsync(ct);
         return Ok(customers.Select(c => c.ToDto()));
     }
+
+    /// <summary>Obtiene un cliente por id.</summary>
+    [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<CustomerDto>> GetById(int id, CancellationToken ct)
+        => Ok((await _customers.GetByIdAsync(id, ct)).ToDto());
 }
