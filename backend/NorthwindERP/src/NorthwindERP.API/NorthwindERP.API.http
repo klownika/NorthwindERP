@@ -34,3 +34,47 @@ Content-Type: application/json
 ### Cliente inexistente -> 404
 GET {{host}}/api/customers/9999
 Authorization: Bearer {{token}}
+
+############################ PEDIDOS ############################
+
+### Crear pedido con cliente nuevo
+POST {{host}}/api/orders/with-customer
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "newCustomer": { "customerName": "Bodega Miraflores SAC", "city": "Lima", "country": "Peru" },
+  "warehouseId": 1,
+  "shipperId": 2,
+  "items": [ { "productId": 11, "quantity": 2 }, { "productId": 42, "quantity": 1 } ]
+}
+
+### Pedido sin stock -> 409 NW409 (no se guarda nada)
+POST {{host}}/api/orders/with-customer
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "customerId": 20, "warehouseId": 1, "items": [ { "productId": 11, "quantity": 9999 } ] }
+
+### customerId y newCustomer a la vez -> 400
+POST {{host}}/api/orders/with-customer
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "customerId": 20, "newCustomer": { "customerName": "X" }, "warehouseId": 1, "items": [ { "productId": 11, "quantity": 1 } ] }
+
+### Detalle de un pedido
+GET {{host}}/api/orders/10248
+Authorization: Bearer {{token}}
+
+### Pedidos de un empleado en 1997
+GET {{host}}/api/orders?employeeId=4&from=1997-01-01&to=1997-12-31
+Authorization: Bearer {{token}}
+
+### Historial de un cliente
+GET {{host}}/api/orders/customer/20
+Authorization: Bearer {{token}}
+
+### Eliminar pedido (solo Admin): cambia el id por el que creaste
+DELETE {{host}}/api/orders/10444
+Authorization: Bearer {{token}}
