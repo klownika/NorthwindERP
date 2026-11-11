@@ -5,6 +5,8 @@ namespace NorthwindERP.API.Mappings;
 
 public static class OrderMappings
 {
+    public static CreateOrderResponse ToDto(this CreateOrderResult r) => new(r.OrderId, r.CustomerId, r.OrderTotal);
+
     public static OrderSummaryDto ToDto(this OrderSummary o) =>
         new(o.OrderId, o.OrderDate, o.CustomerId, o.CustomerName, o.EmployeeName, o.ShipperName, o.LineCount, o.OrderTotal);
 
