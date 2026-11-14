@@ -1,0 +1,148 @@
+<div class="app">
+  <!-- ===================== SIDEBAR ===================== -->
+  <nav aria-label="Módulos" class="sidebar" [class.mini]="mini()">
+    <svg class="deco" aria-hidden="true" viewBox="0 0 260 900" preserveAspectRatio="none">
+      <defs>
+        <radialGradient id="sbGlow" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#FFF3C4" stop-opacity="0.75" />
+          <stop offset="0.5" stop-color="#FDBA4D" stop-opacity="0.3" />
+          <stop offset="1" stop-color="#FB923C" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      <path d="M0 0 H260 V110 C 190 140 90 128 0 160 Z" fill="#FFFFFF" opacity="0.09" />
+      <path d="M0 760 C 90 716 180 692 260 632" stroke="#FFFFFF" stroke-width="2" fill="none" opacity="0.8" />
+      <path d="M0 742 C 90 700 180 676 260 616 L260 624 C 180 684 90 708 0 750 Z" fill="#FDE047" opacity="0.7" />
+      <circle cx="40" cy="860" r="190" fill="url(#sbGlow)" />
+    </svg>
+    <svg class="rings" aria-hidden="true" viewBox="0 0 200 200">
+      <g fill="none" stroke-opacity="0.24">
+        <circle cx="100" cy="100" r="40" stroke-width="6" stroke="#F8B636" />
+        <circle cx="100" cy="100" r="64" stroke-width="2" stroke="#FB923C" style="filter: drop-shadow(0 1px 3px #00000033)" />
+      </g>
+    </svg>
+
+    <button type="button" class="brand" (click)="toggleMini()" [attr.aria-label]="mini() ? 'Expandir menú' : 'Contraer menú'"
+            [title]="mini() ? 'Expandir menú' : 'Contraer menú'" [attr.aria-expanded]="!mini()">
+      <span class="logo"><app-icon name="box" [size]="20" [stroke]="2.2" /></span>
+      <span class="sbl brand-txt">Stock<span>IN</span></span>
+    </button>
+
+    <div class="sbscroll">
+      <a class="navbtn" routerLink="/" title="Inicio" [class.on]="url() === '/'" [attr.aria-current]="url() === '/' ? 'page' : null">
+        <app-icon name="home" /><span class="sbl grow">Inicio</span>
+      </a>
+
+      @for (m of nav; track m.key) {
+        <button type="button" class="navbtn" [title]="m.label" (click)="toggleModule(m.key)"
+                [attr.aria-expanded]="!!open()[m.key]" [class.mod-on]="currentModule()?.key === m.key">
+          <app-icon [name]="m.icon" /><span class="sbl grow">{{ m.label }}</span>
+          <span class="sbl chev" [class.up]="open()[m.key]"><app-icon name="chevron" [size]="16" [stroke]="2.4" /></span>
+        </button>
+        @if (open()[m.key]) {
+          <div class="subs sbsub">
+            @for (s of m.subs; track s.path) {
+              <a class="subbtn" [routerLink]="s.path" [class.on]="isActive(s.path)" [attr.aria-current]="isActive(s.path) ? 'page' : null">{{ s.label }}</a>
+            }
+          </div>
+        }
+      }
+    </div>
+
+    <div class="sbcard">
+      <div class="who">
+        <span class="av" aria-hidden="true">{{ me().initials }}</span>
+        <div class="sbl who-txt">
+          <span class="who-name">{{ me().name }}</span>
+          <span class="who-role">{{ me().role }}</span>
+        </div>
+      </div>
+      <button type="button" class="logout" title="Cerrar sesión" aria-label="Cerrar sesión" (click)="auth.logout()">
+        <app-icon name="logout" [size]="18" /><span class="sbl">Cerrar sesión</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===================== CONTENIDO ===================== -->
+  <div class="content">
+    <header class="topbar">
+      <form class="search" role="search" (submit)="$event.preventDefault(); doSearch()">
+        <app-icon name="search" [size]="18" />
+        <label for="hq" class="sr">Buscar producto</label>
+        <input id="hq" [value]="search()" (input)="search.set($any($event.target).value)" placeholder="Buscar producto en el catálogo…" />
+      </form>
+      <div class="actions">
+        <a class="primary" routerLink="/ventas/nuevo-pedido"><app-icon name="plus" [size]="18" [stroke]="2.6" />Nuevo pedido</a>
+        <a class="iconbtn" routerLink="/inventario/stock" [queryParams]="{ low: 1 }"
+           [attr.aria-label]="lowStock.count() ? 'Productos por reponer: ' + lowStock.count() : 'Sin productos por reponer'">
+          <app-icon name="alert" />
+          @if (lowStock.count()) { <span class="badge" aria-hidden="true">{{ lowStock.count() }}</span> }
+        </a>
+        <a class="iconbtn avatar" routerLink="/cuenta" aria-label="Mi cuenta">{{ me().initials }}</a>
+      </div>
+    </header>
+    <div class="stripe" aria-hidden="true"></div>
+
+    <main class="main">
+      <!-- franja DORfic -->
+      <div class="hero">
+        <svg class="hero-deco" aria-hidden="true" viewBox="0 0 1200 170" preserveAspectRatio="none">
+          <path d="M520 170 C 760 130 940 70 1200 22 L1200 170 Z" fill="#FBBF24" opacity="0.28" />
+          <path d="M660 170 C 860 140 1010 96 1200 66 L1200 170 Z" fill="#FDE68A" opacity="0.30" />
+          <path d="M480 160 C 740 120 930 60 1200 10" stroke="#FFFFFF" stroke-width="2.5" fill="none" opacity="0.75" />
+          <path d="M600 170 C 820 140 990 100 1200 78" stroke="#FFFFFF" stroke-width="1.2" fill="none" opacity="0.6" />
+          <g fill="none" stroke="#FFFFFF" stroke-opacity="0.28"><circle cx="1090" cy="58" r="34" stroke-width="5" /><circle cx="1090" cy="58" r="56" stroke-width="1.5" /></g>
+          <rect x="0" y="0" width="1200" height="60" fill="#FFFFFF" opacity="0.07" />
+        </svg>
+        <nav aria-label="Ruta" class="crumbs">
+          <a routerLink="/">StockIN</a>
+          @if (currentModule(); as m) { <span aria-hidden="true">›</span><a [routerLink]="m.subs[0].path">{{ m.label }}</a> }
+          @if (page.crumbOverride()) {
+            <span aria-hidden="true">›</span><a [routerLink]="currentSub()?.path">{{ currentSub()?.label }}</a>
+            <span aria-hidden="true">›</span><strong>{{ page.crumbOverride() }}</strong>
+          } @else if (data().module) {
+            <span aria-hidden="true">›</span><strong>{{ currentSub()?.label ?? data().title }}</strong>
+          } @else if (url() !== '/') {
+            <span aria-hidden="true">›</span><strong>{{ data().title }}</strong>
+          }
+        </nav>
+        <div class="hero-row">
+          <div class="hero-title">
+            <div class="hero-text">
+              <span class="accent-line" aria-hidden="true"></span>
+              <h1>{{ title() }}</h1>
+              <p>{{ data().subtitle }}</p>
+            </div>
+            @if (data().accountIcon) {
+              <svg aria-hidden="true" width="58" height="66" viewBox="0 0 64 72" class="acc-ico">
+                <defs>
+                  <radialGradient id="acHead" cx="0.38" cy="0.32" r="0.72"><stop offset="0" stop-color="#FFE7BA" /><stop offset="0.35" stop-color="#FDBA4D" /><stop offset="0.75" stop-color="#F97316" /><stop offset="1" stop-color="#C2410C" /></radialGradient>
+                  <radialGradient id="acBody" cx="0.4" cy="0.2" r="0.9"><stop offset="0" stop-color="#FFD08A" /><stop offset="0.4" stop-color="#F97316" /><stop offset="1" stop-color="#B53C0A" /></radialGradient>
+                </defs>
+                <path d="M6 66 C 6 50 17 41 32 41 C 47 41 58 50 58 66 C 58 70 56 72 52 72 L12 72 C 8 72 6 70 6 66 Z" fill="url(#acBody)" />
+                <path d="M6 66 C 6 50 17 41 32 41 C 47 41 58 50 58 66" fill="none" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="1.2" />
+                <ellipse cx="23" cy="51" rx="10" ry="4" fill="#FFFFFF" opacity="0.5" transform="rotate(-18 23 51)" />
+                <circle cx="32" cy="22" r="15.5" fill="url(#acHead)" />
+                <circle cx="32" cy="22" r="15" fill="none" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="1" />
+                <ellipse cx="27" cy="14.5" rx="7" ry="4.2" fill="#FFFFFF" opacity="0.8" transform="rotate(-22 27 14.5)" />
+                <circle cx="38" cy="30" r="2" fill="#FFFFFF" opacity="0.35" />
+              </svg>
+            }
+          </div>
+          <span class="src" title="Endpoint y objeto de la base de datos que alimentan esta pantalla">
+            <app-icon name="db" [size]="14" [stroke]="2.2" />{{ data().src }}
+          </span>
+        </div>
+      </div>
+
+      @if (currentModule(); as m) {
+        <div role="tablist" aria-label="Submódulos" class="tabs">
+          @for (s of m.subs; track s.path) {
+            <a role="tab" class="tab" [routerLink]="s.path" [class.on]="isActive(s.path)" [attr.aria-selected]="isActive(s.path)">{{ s.label }}</a>
+          }
+        </div>
+      }
+
+      <router-outlet />
+    </main>
+  </div>
+</div>
