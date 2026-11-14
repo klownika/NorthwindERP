@@ -1,0 +1,5 @@
+:host { display: flex; flex-direction: column; gap: 16px; }
+.box { padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; }
+.txt { font-size: 14px; color: var(--ink-2); }
+.msg { padding: 10px 12px; border-radius: 10px; font-size: 14px; background: #fef2f2; color: #7f1d1d; }
+.msg.ok { background: #f0fdf4; color: #14532d; }

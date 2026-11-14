@@ -1,0 +1,50 @@
+<div><a class="ghost" routerLink="/ventas/clientes"><app-icon name="back" [size]="16" [stroke]="2.4" />Volver a clientes</a></div>
+<app-load-state [loading]="load.loading()" [error]="load.error()" />
+
+@if (customer(); as c) {
+  <div class="grid-auto" style="--min: 380px">
+    <section class="card box">
+      <h2 class="section-title" style="font-size: 18px">{{ c.customerName }}</h2>
+      <span class="txt">Contacto: <strong>{{ c.contactName ?? '—' }}</strong></span>
+      <span class="txt">Dirección: {{ c.address ?? '—' }}</span>
+      <span class="txt">{{ cityLine(c) }}</span>
+      <span class="txt">Pedidos: <strong>{{ stats().orders }}</strong> · Ventas: <strong>{{ money(stats().sales) }}</strong></span>
+      <span class="muted" style="font-size: 12px">La tabla customers no tiene teléfono: por eso solo se edita la dirección.</span>
+    </section>
+
+    <form class="card box" (submit)="$event.preventDefault(); save()">
+      <h2 class="section-title" style="font-size: 16px">Editar dirección</h2>
+      <div class="grid-auto" style="--min: 160px; gap: 10px">
+        <div class="fgroup" style="grid-column: 1 / -1"><label for="fa" class="lbl">Dirección</label><input id="fa" name="fa" class="field" maxlength="50" [(ngModel)]="f.address" /></div>
+        <div class="fgroup"><label for="fci" class="lbl">Ciudad</label><input id="fci" name="fci" class="field" maxlength="20" [(ngModel)]="f.city" /></div>
+        <div class="fgroup"><label for="fp" class="lbl">Código postal</label><input id="fp" name="fp" class="field" maxlength="10" [(ngModel)]="f.postalCode" /></div>
+        <div class="fgroup"><label for="fco" class="lbl">País</label><input id="fco" name="fco" class="field" maxlength="15" [(ngModel)]="f.country" /></div>
+      </div>
+      @if (msg(); as m) {
+        <div role="status" class="msg" [class.ok]="m.ok"><strong>{{ m.title }}</strong> · {{ m.text }}</div>
+      }
+      <div><button type="submit" class="primary" [disabled]="saving()">{{ saving() ? 'Guardando…' : 'Guardar dirección' }}</button></div>
+    </form>
+  </div>
+
+  <section class="stack" style="gap: 10px">
+    <h2 class="section-title">Historial de pedidos</h2>
+    <app-pager [pager]="pager" />
+    <div class="table-box">
+      <div style="min-width: 980px">
+        <div class="thr" [style.grid-template-columns]="cols">
+          <div>Pedido</div><div>Fecha</div><div>Transportista</div><div>Vendedor</div><div>Producto</div><div class="r">Cant.</div><div class="r">Precio</div><div class="r">Total</div>
+        </div>
+        @for (h of pager.rows(); track $index) {
+          <div class="tr" [style.grid-template-columns]="cols">
+            <div><a class="linkbtn" [routerLink]="['/ventas/pedidos', h.orderId]">#{{ h.orderId }}</a></div>
+            <div>{{ fmtDate(h.orderDate) }}</div><div>{{ h.shipperName ?? '—' }}</div><div>{{ h.employeeName }}</div>
+            <div class="sb">{{ h.productName }}</div><div class="r">{{ int(h.quantity) }}</div><div class="r">{{ money(h.unitPrice) }}</div><div class="r b">{{ money(h.lineTotal) }}</div>
+          </div>
+        } @empty {
+          <div class="empty">Este cliente todavía no tiene pedidos.</div>
+        }
+      </div>
+    </div>
+  </section>
+}

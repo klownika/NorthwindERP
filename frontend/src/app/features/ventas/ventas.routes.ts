@@ -19,4 +19,8 @@ export const VENTAS_ROUTES: Routes = [
     path: 'clientes', loadComponent: () => import('./clientes/clientes').then((m) => m.ClientesComponent),
     data: { module: 'ventas', title: 'Clientes', subtitle: 'Clientes de Northwind. Abre una ficha para editar su dirección o ver su historial.', src: 'GET /api/customers · Customers' },
   },
+  {
+    path: 'clientes/:id', loadComponent: () => import('./cliente-ficha/cliente-ficha').then((m) => m.ClienteFichaComponent),
+    data: { module: 'ventas', title: 'Cliente', subtitle: 'Ficha del cliente, edición de dirección e historial.', src: 'PUT /api/customers/{id} · GET /api/orders/customer/{id} → get_customer_order_history()' },
+  },
 ];
