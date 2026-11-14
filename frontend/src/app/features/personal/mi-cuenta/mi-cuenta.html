@@ -1,0 +1,16 @@
+<div class="grid-auto" style="--min: 360px">
+  <section class="card box">
+    <h2 class="section-title" style="font-size: 16px">Datos del token</h2>
+    @for (f of facts(); track f.label) {
+      <div class="fact"><span>{{ f.label }}</span><strong>{{ f.value }}</strong></div>
+    }
+  </section>
+  <form class="card box" (submit)="$event.preventDefault(); submit()">
+    <h2 class="section-title" style="font-size: 16px">Cambiar contraseña</h2>
+    <div class="fgroup"><label for="ac" class="lbl">Contraseña actual</label><input id="ac" name="ac" class="field" type="password" [(ngModel)]="cur" autocomplete="current-password" /></div>
+    <div class="fgroup"><label for="an" class="lbl">Nueva contraseña (mínimo 8 caracteres)</label><input id="an" name="an" class="field" type="password" [(ngModel)]="n1" autocomplete="new-password" /></div>
+    <div class="fgroup"><label for="an2" class="lbl">Confirmar nueva contraseña</label><input id="an2" name="an2" class="field" type="password" [(ngModel)]="n2" autocomplete="new-password" /></div>
+    @if (msg(); as m) { <div role="status" class="msg" [class.ok]="m.ok"><strong>{{ m.title }}</strong> · {{ m.text }}</div> }
+    <div><button type="submit" class="primary" [disabled]="busy()">{{ busy() ? 'Guardando…' : 'Cambiar contraseña' }}</button></div>
+  </form>
+</div>

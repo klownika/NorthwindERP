@@ -1,0 +1,4 @@
+.box { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.fact { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line-2); font-size: 14px; span { color: var(--ink-3); } }
+.msg { padding: 10px 12px; border-radius: 10px; font-size: 14px; background: #fef2f2; color: #7f1d1d; }
+.msg.ok { background: #f0fdf4; color: #14532d; }

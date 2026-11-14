@@ -30,6 +30,11 @@ export const routes: Routes = [
       { path: 'inventario', loadChildren: () => import('./features/inventario/inventario.routes').then((m) => m.INVENTARIO_ROUTES) },
       { path: 'ventas', loadChildren: () => import('./features/ventas/ventas.routes').then((m) => m.VENTAS_ROUTES) },
       { path: 'personal', loadChildren: () => import('./features/personal/personal.routes').then((m) => m.PERSONAL_ROUTES) },
+      {
+        path: 'cuenta',
+        loadComponent: () => import('./features/personal/mi-cuenta/mi-cuenta').then((m) => m.MiCuentaComponent),
+        data: { title: 'Mi cuenta', subtitle: 'Tu sesión y tu contraseña.', src: 'GET /api/auth/me · POST /api/auth/change-password · UserAccounts', accountIcon: true },
+      },
     ],
   },
   { path: '**', redirectTo: '' },
