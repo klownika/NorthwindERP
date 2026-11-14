@@ -1,0 +1,71 @@
+<div class="top">
+  <a class="ghost" routerLink="/ventas/pedidos"><app-icon name="back" [size]="16" [stroke]="2.4" />Volver a pedidos</a>
+  @if (auth.isAdmin()) {
+    @if (!confirming()) { <button type="button" class="danger" (click)="confirming.set(true)" [disabled]="!detail()">Eliminar pedido</button> }
+  } @else {
+    <span class="muted">Solo un Admin puede eliminar pedidos (403).</span>
+  }
+</div>
+
+@if (flash()) {
+  <div class="alert ok" role="status"><strong>201 CREATED · Location: /api/orders/{{ id }}</strong><span>{{ flash() }}</span></div>
+}
+@if (confirming()) {
+  <div class="alert err" role="alertdialog" aria-label="Confirmar eliminación">
+    <strong style="font-size: 15px">¿Eliminar el pedido #{{ id }}?</strong>
+    <span>
+      @if (moves().length) {
+        Se devolverá el stock al almacén de origen y se registrará un INBOUND "Return - order {{ id }} deleted" en el Kardex. Los detalles se borran en cascada.
+      } @else {
+        Este pedido no movió inventario: se eliminan el pedido y sus detalles (ON DELETE CASCADE).
+      }
+    </span>
+    <div class="btns">
+      <button type="button" class="danger" (click)="remove()" [disabled]="deleting()">{{ deleting() ? 'Eliminando…' : 'Sí, eliminar' }}</button>
+      <button type="button" class="ghost" (click)="confirming.set(false)">Cancelar</button>
+    </div>
+  </div>
+}
+@if (deleteError(); as e) {
+  <div class="alert err" role="alert"><strong>{{ e.title }}</strong>@for (m of e.messages; track m) { <span>{{ m }}</span> }</div>
+}
+
+<app-load-state [loading]="load.loading()" [error]="load.error()" />
+
+@if (detail(); as d) {
+  <div class="grid-auto" style="--min: 190px; gap: 12px">
+    @for (f of facts(); track f.label) {
+      <div class="card fact"><span>{{ f.label }}</span><strong>{{ f.value }}</strong></div>
+    }
+  </div>
+
+  <section class="stack" style="gap: 10px">
+    <h2 class="section-title">Productos del pedido</h2>
+    <div class="table-box">
+      <div style="min-width: 760px">
+        <div class="thr" [style.grid-template-columns]="cols">
+          <div>Producto</div><div>Categoría</div><div class="r">Cantidad</div><div class="r">Precio</div><div class="r">Total línea</div>
+        </div>
+        @for (l of d.lines; track l.productId) {
+          <div class="tr" [style.grid-template-columns]="cols">
+            <div class="sb">{{ l.productName }}</div><div>{{ l.categoryName ?? '—' }}</div><div class="r">{{ int(l.quantity) }}</div>
+            <div class="r">{{ money(l.unitPrice) }}</div><div class="r b">{{ money(l.lineTotal) }}</div>
+          </div>
+        }
+        <div class="total"><span class="muted" style="font-size: 16px">Total del pedido</span><strong>{{ money(d.order.orderTotal) }}</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card moves">
+    <h2 class="section-title" style="font-size: 16px">Movimientos de inventario</h2>
+    @for (m of moves(); track m.transactionId) {
+      <div class="move">
+        <span class="ttype out">OUTBOUND</span><span class="sb">{{ m.productName }}</span><span>−{{ int(m.quantity) }} u.</span>
+        <span class="muted">{{ m.warehouseName }}</span><code>{{ m.notes }}</code>
+      </div>
+    } @empty {
+      <p class="muted" style="margin: 0; font-size: 14px">Pedido histórico (anterior al ERP): no movió inventario ni tiene filas en el Kardex.</p>
+    }
+  </section>
+}

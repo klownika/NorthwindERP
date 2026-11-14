@@ -1,0 +1,9 @@
+:host { display: flex; flex-direction: column; gap: 16px; }
+.top { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; }
+.btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.fact { padding: 14px 16px; display: flex; flex-direction: column; gap: 4px;
+  span { font-size: 12px; font-weight: 700; color: var(--ink-4); } strong { font-size: 16px; } }
+.total { display: flex; justify-content: flex-end; align-items: baseline; gap: 24px; padding: 14px; border-top: 2px solid var(--line);
+  strong { font-size: 16px; color: var(--or-800); } }
+.moves { padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.move { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; align-items: center; code { font-size: 12px; color: var(--ink-2); } }
