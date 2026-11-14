@@ -1,0 +1,47 @@
+<div class="stack">
+  <div class="filters">
+    <div class="fgroup" style="flex: 1 1 240px">
+      <label for="kq" class="lbl">Buscar historial de producto</label>
+      <input id="kq" class="field" [(ngModel)]="q" placeholder="Nombre del producto" />
+    </div>
+    <div class="fgroup" style="flex: 0 1 240px">
+      <label for="kw" class="lbl">Almacén</label>
+      <select id="kw" class="field" [ngModel]="wh()" (ngModelChange)="setWh(+$event)">
+        <option [ngValue]="0">Todos los almacenes</option>
+        @for (w of warehouses(); track w.warehouseId) { <option [ngValue]="w.warehouseId">{{ w.warehouseName }}</option> }
+      </select>
+    </div>
+    <div class="fgroup">
+      <span class="lbl" id="kt">Tipo</span>
+      <div role="group" aria-labelledby="kt" style="display: flex; gap: 6px">
+        @for (t of types; track t.label) {
+          <button type="button" class="pill tall" [class.on]="type() === t.v" [attr.aria-pressed]="type() === t.v" (click)="setType(t.v)">{{ t.label }}</button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <app-load-state [loading]="load.loading()" [error]="load.error()" />
+  <app-pager [pager]="pager" />
+
+  <div class="table-box">
+    <div style="min-width: 1100px">
+      <div class="thr" [style.grid-template-columns]="cols">
+        <div>ID</div><div>Fecha</div><div>Producto</div><div>Tipo</div><div class="r">Cant.</div><div>Operador</div><div>Almacén</div><div>Pedido</div><div>Nota</div>
+      </div>
+      @for (k of pager.rows(); track k.transactionId) {
+        <div class="tr" [style.grid-template-columns]="cols">
+          <div class="muted">{{ k.transactionId }}</div><div>{{ fmt(k.transactionDate) }}</div><div class="sb">{{ k.productName }}</div>
+          <div><span class="ttype" [class.in]="k.transactionType === 'INBOUND'" [class.out]="k.transactionType === 'OUTBOUND'">{{ k.transactionType }}</span></div>
+          <div class="r b">{{ int(k.quantity) }}</div><div>{{ k.employeeName }}</div><div>{{ k.warehouseName }}</div>
+          <div>
+            @if (k.orderId) { <a class="linkbtn" [routerLink]="['/ventas/pedidos', k.orderId]">#{{ k.orderId }}</a> } @else { <span class="muted">—</span> }
+          </div>
+          <div style="font-family: var(--mono); font-size: 12px; color: var(--ink-2)">{{ k.notes }}</div>
+        </div>
+      } @empty {
+        @if (!load.loading()) { <div class="empty">Sin movimientos para este filtro.</div> }
+      }
+    </div>
+  </div>
+</div>
