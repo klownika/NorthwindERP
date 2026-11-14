@@ -15,4 +15,8 @@ export const INVENTARIO_ROUTES: Routes = [
     path: 'kardex', loadComponent: () => import('./kardex/kardex').then((m) => m.KardexComponent),
     data: { module: 'inventario', title: 'Kardex', subtitle: 'Historial de movimientos: cada cambio de stock deja su fila.', src: 'GET /api/inventory/kardex · InventoryTransactions' },
   },
+  {
+    path: 'almacenes', loadComponent: () => import('./almacenes/almacenes').then((m) => m.AlmacenesComponent),
+    data: { module: 'inventario', title: 'Almacenes', subtitle: 'Almacenes, su responsable y el estado de su stock.', src: 'GET /api/inventory/warehouses · Warehouses + Employees' },
+  },
 ];

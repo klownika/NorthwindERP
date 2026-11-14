@@ -1,0 +1,21 @@
+<app-load-state [loading]="load.loading()" [error]="load.error()" />
+<div class="grid-auto" style="--min: 300px">
+  @for (w of cards(); track w.warehouseId) {
+    <article class="card wh">
+      <div class="head">
+        <span class="ico"><app-icon name="warehouse" [size]="22" /></span>
+        <div class="names"><h2>{{ w.warehouseName }}</h2><span class="muted">{{ w.location }}</span></div>
+      </div>
+      <div class="stats">
+        <div><span>Productos</span><strong>{{ w.products }}</strong></div>
+        <div><span>Unidades</span><strong>{{ w.units }}</strong></div>
+        <div><span>Por reponer</span><strong [style.color]="w.low ? '#991B1B' : '#166534'">{{ w.low }}</strong></div>
+      </div>
+      <span class="mgr">Responsable: <strong>{{ w.managerName }}</strong></span>
+      <div class="btns">
+        <a class="ghost" routerLink="/inventario/stock" [queryParams]="{ w: w.warehouseId }">Ver stock</a>
+        <a class="ghost" routerLink="/inventario/kardex">Ver Kardex</a>
+      </div>
+    </article>
+  }
+</div>

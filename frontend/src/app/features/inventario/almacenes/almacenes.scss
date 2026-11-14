@@ -1,0 +1,9 @@
+.wh { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.head { display: flex; align-items: center; gap: 12px; }
+.ico { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: #fff1e6; color: var(--or-700); }
+.names { display: flex; flex-direction: column; h2 { margin: 0; font-size: 17px; font-weight: 800; } }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;
+  > div { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 12px; background: #fffbf7; }
+  span { font-size: 12px; color: var(--ink-4); } strong { font-size: 18px; } }
+.mgr { font-size: 14px; color: var(--ink-2); }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; }
