@@ -1,0 +1,19 @@
+<div class="stack">
+  <app-load-state [loading]="load.loading()" [error]="load.error()" />
+  <app-kpi-grid [items]="kpis()" />
+  <div class="grid-auto" style="--min: 420px">
+    <app-donut title="Participación por país" [parts]="parts()" [centerValue]="'' + sorted().length" centerLabel="países con ventas"
+               ariaLabel="Gráfico de dona: participación de cada país en las ventas" />
+    <app-column-chart title="Ventas por país" [groups]="columns()" [height]="230" [gap]="6" [verticalLabels]="true" />
+  </div>
+  <h2 class="section-title">Ranking de países</h2>
+  <section class="card" style="padding: 20px; display: flex; flex-direction: column; gap: 14px">
+    @for (r of ranking(); track r.country) {
+      <div style="display: grid; grid-template-columns: 130px minmax(0, 1fr) 130px; gap: 14px; align-items: center">
+        <div style="display: flex; flex-direction: column"><span class="b" style="font-size: 14px">{{ r.country }}</span><span class="muted" style="font-size: 12px">{{ r.totalCustomers }} clientes · {{ r.totalOrders }} pedidos</span></div>
+        <div class="track" style="height: 14px"><div class="bar" [style.width]="r.pct"></div></div>
+        <div class="r b" style="font-size: 14px">{{ money(r.totalSales) }}</div>
+      </div>
+    }
+  </section>
+</div>

@@ -7,4 +7,8 @@ export const REPORTES_ROUTES: Routes = [
     path: 'por-cliente', loadComponent: () => import('./por-cliente/por-cliente').then((m) => m.PorClienteComponent),
     data: { module: 'reportes', title: 'Ventas por cliente', subtitle: 'Ventas totales por cliente (solo clientes con al menos un pedido).', src: 'GET /api/reports/sales-by-customer · vw_sales_by_customer' },
   },
+  {
+    path: 'por-pais', loadComponent: () => import('./por-pais/por-pais').then((m) => m.PorPaisComponent),
+    data: { module: 'reportes', title: 'Ventas por país', subtitle: 'Ventas totales por país del cliente.', src: 'GET /api/reports/sales-by-country · vw_sales_by_country' },
+  },
 ];
