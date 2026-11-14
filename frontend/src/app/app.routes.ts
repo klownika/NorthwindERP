@@ -35,6 +35,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/personal/mi-cuenta/mi-cuenta').then((m) => m.MiCuentaComponent),
         data: { title: 'Mi cuenta', subtitle: 'Tu sesión y tu contraseña.', src: 'GET /api/auth/me · POST /api/auth/change-password · UserAccounts', accountIcon: true },
       },
+      { path: 'reportes', loadChildren: () => import('./features/reportes/reportes.routes').then((m) => m.REPORTES_ROUTES) },
     ],
   },
   { path: '**', redirectTo: '' },

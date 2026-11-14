@@ -1,0 +1,5 @@
+:host { display: flex; flex-direction: column; gap: 16px; }
+.top { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.trow { display: grid; grid-template-columns: 28px minmax(0, 170px) minmax(0, 1fr) 104px; gap: 10px; align-items: center; font-size: 13px; }
+.rank { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 999px; color: #fff; font-weight: 800; font-size: 12px; box-shadow: inset 0 1px 0 rgba(255,255,255,.45); }
+.name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

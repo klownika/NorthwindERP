@@ -1,0 +1,35 @@
+<app-load-state [loading]="load.loading()" [error]="load.error()" />
+<app-kpi-grid [items]="kpis()" />
+
+<div class="grid-auto" style="--min: 420px">
+  <section class="card top">
+    <h2 class="section-title">Top 10 clientes</h2>
+    @for (t of top10(); track t.customerId) {
+      <div class="trow">
+        <span class="rank" [style.background]="t.rank <= 3 ? '#9A3412' : '#C2410C'">{{ t.rank }}</span>
+        <span class="sb name">{{ t.customerName }}</span>
+        <div class="track" style="height: 16px"><div class="bar" [style.width]="t.pct"></div></div>
+        <span class="r b">{{ money(t.totalSales) }}</span>
+      </div>
+    }
+  </section>
+  <app-donut title="Concentración de ventas" [parts]="parts()" [centerValue]="top5Share()" centerLabel="de las ventas está en el top 5"
+             ariaLabel="Gráfico de dona: participación del top 5 de clientes en las ventas" />
+</div>
+
+<h2 class="section-title">Detalle por cliente</h2>
+<app-pager [pager]="pager" />
+<div class="table-box">
+  <div style="min-width: 900px">
+    <div class="thr" [style.grid-template-columns]="cols">
+      <div>#</div><div>Cliente</div><div>País</div><div class="r">Pedidos</div><div class="r">Unidades</div><div class="r">Ventas</div><div></div>
+    </div>
+    @for (r of pager.rows(); track r.customerId) {
+      <div class="tr" [style.grid-template-columns]="cols">
+        <div class="muted">{{ r.rank }}</div><div class="sb">{{ r.customerName }}</div><div>{{ r.country }}</div>
+        <div class="r">{{ r.totalOrders }}</div><div class="r">{{ int(r.totalUnits) }}</div><div class="r b">{{ money(r.totalSales) }}</div>
+        <div><div class="track"><div class="bar" [style.width]="r.pct"></div></div></div>
+      </div>
+    }
+  </div>
+</div>
