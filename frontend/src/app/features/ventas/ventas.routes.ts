@@ -15,4 +15,8 @@ export const VENTAS_ROUTES: Routes = [
     path: 'nuevo-pedido', loadComponent: () => import('./nuevo-pedido/nuevo-pedido').then((m) => m.NuevoPedidoComponent),
     data: { module: 'ventas', title: 'Nuevo pedido', subtitle: 'Registra un pedido completo: cliente, almacén y productos en una sola transacción.', src: 'POST /api/orders/with-customer · INSERT Customers + CALL sp_register_order' },
   },
+  {
+    path: 'clientes', loadComponent: () => import('./clientes/clientes').then((m) => m.ClientesComponent),
+    data: { module: 'ventas', title: 'Clientes', subtitle: 'Clientes de Northwind. Abre una ficha para editar su dirección o ver su historial.', src: 'GET /api/customers · Customers' },
+  },
 ];
