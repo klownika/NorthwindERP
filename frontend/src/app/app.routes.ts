@@ -29,6 +29,7 @@ export const routes: Routes = [
       },
       { path: 'inventario', loadChildren: () => import('./features/inventario/inventario.routes').then((m) => m.INVENTARIO_ROUTES) },
       { path: 'ventas', loadChildren: () => import('./features/ventas/ventas.routes').then((m) => m.VENTAS_ROUTES) },
+      { path: 'personal', loadChildren: () => import('./features/personal/personal.routes').then((m) => m.PERSONAL_ROUTES) },
     ],
   },
   { path: '**', redirectTo: '' },

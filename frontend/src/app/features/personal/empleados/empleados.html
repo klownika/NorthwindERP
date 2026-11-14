@@ -1,0 +1,14 @@
+<app-load-state [loading]="load.loading()" [error]="load.error()" />
+<app-pager [pager]="pager" />
+<div class="grid">
+  @for (e of pager.rows(); track e.employeeId) {
+    <article class="card emp">
+      <div class="head">
+        <span class="av" aria-hidden="true">{{ e.initials }}</span>
+        <div class="names"><h2>{{ e.fullName }}</h2><span class="muted">Nacimiento: {{ e.birth }} · ID {{ e.employeeId }}</span></div>
+      </div>
+      <p>{{ e.notesShort }}</p>
+      <div class="tags">@for (t of e.tags; track t) { <span class="tg">{{ t }}</span> }</div>
+    </article>
+  }
+</div>
