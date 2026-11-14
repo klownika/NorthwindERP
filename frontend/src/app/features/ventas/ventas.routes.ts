@@ -11,4 +11,8 @@ export const VENTAS_ROUTES: Routes = [
     path: 'pedidos/:id', loadComponent: () => import('./pedido-detalle/pedido-detalle').then((m) => m.PedidoDetalleComponent),
     data: { module: 'ventas', title: 'Pedido', subtitle: 'Detalle del pedido con sus productos y el total por línea.', src: 'GET /api/orders/{id} · vw_order_details_extended · DELETE → sp_delete_order' },
   },
+  {
+    path: 'nuevo-pedido', loadComponent: () => import('./nuevo-pedido/nuevo-pedido').then((m) => m.NuevoPedidoComponent),
+    data: { module: 'ventas', title: 'Nuevo pedido', subtitle: 'Registra un pedido completo: cliente, almacén y productos en una sola transacción.', src: 'POST /api/orders/with-customer · INSERT Customers + CALL sp_register_order' },
+  },
 ];

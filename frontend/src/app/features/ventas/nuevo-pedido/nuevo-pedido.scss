@@ -1,0 +1,9 @@
+:host { display: flex; flex-direction: column; gap: 16px; }
+.sec { padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; h2 { margin: 0; font-size: 16px; font-weight: 800; } }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.between { justify-content: space-between; }
+.end { justify-content: flex-end; gap: 10px; }
+.line { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 12px; align-items: end; padding-bottom: 12px; border-bottom: 1px solid var(--line-2); }
+.span2 { grid-column: span 2; }
+.info { display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: var(--ink-3); }
+.sum { display: flex; justify-content: flex-end; gap: 16px; font-size: 17px; strong { color: var(--or-800); } }

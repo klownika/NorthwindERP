@@ -1,0 +1,87 @@
+<app-load-state [loading]="load.loading()" [error]="load.error()" />
+
+<form class="stack" (submit)="$event.preventDefault(); submit()">
+  <section class="card sec">
+    <h2>1 · Cliente</h2>
+    <div role="group" aria-label="Tipo de cliente" class="row">
+      <button type="button" class="pill" [class.on]="mode() === 'existing'" [attr.aria-pressed]="mode() === 'existing'" (click)="mode.set('existing')">Cliente existente</button>
+      <button type="button" class="pill" [class.on]="mode() === 'new'" [attr.aria-pressed]="mode() === 'new'" (click)="mode.set('new')">Cliente nuevo</button>
+    </div>
+    @if (mode() === 'existing') {
+      <div class="fgroup" style="max-width: 520px">
+        <label for="ncid" class="lbl">Cliente</label>
+        <select id="ncid" class="field" name="customerId" [ngModel]="customerId()" (ngModelChange)="customerId.set(+$event)">
+          <option [ngValue]="0">Selecciona un cliente</option>
+          @for (c of sortedCustomers(); track c.customerId) { <option [ngValue]="c.customerId">{{ c.customerName }} · {{ c.country }}</option> }
+        </select>
+      </div>
+    } @else {
+      <div class="grid-auto" style="--min: 220px; gap: 12px">
+        <div class="fgroup"><label for="nn" class="lbl">Nombre del cliente *</label><input id="nn" class="field" name="nn" maxlength="50" [(ngModel)]="nc.customerName" /></div>
+        <div class="fgroup"><label for="nco" class="lbl">Contacto</label><input id="nco" class="field" name="nco" maxlength="50" [(ngModel)]="nc.contactName" /></div>
+        <div class="fgroup"><label for="na" class="lbl">Dirección</label><input id="na" class="field" name="na" maxlength="50" [(ngModel)]="nc.address" /></div>
+        <div class="fgroup"><label for="nci" class="lbl">Ciudad</label><input id="nci" class="field" name="nci" maxlength="20" [(ngModel)]="nc.city" /></div>
+        <div class="fgroup"><label for="np" class="lbl">Código postal</label><input id="np" class="field" name="np" maxlength="10" [(ngModel)]="nc.postalCode" /></div>
+        <div class="fgroup"><label for="npa" class="lbl">País</label><input id="npa" class="field" name="npa" maxlength="15" [(ngModel)]="nc.country" /></div>
+      </div>
+    }
+  </section>
+
+  <section class="card sec">
+    <h2>2 · Almacén y transportista</h2>
+    <div class="grid-auto" style="--min: 240px; gap: 12px">
+      <div class="fgroup">
+        <label for="nw" class="lbl">Almacén (todo el pedido sale de aquí)</label>
+        <select id="nw" class="field" name="warehouseId" [ngModel]="warehouseId()" (ngModelChange)="warehouseId.set(+$event)">
+          @for (w of warehouses(); track w.warehouseId) { <option [ngValue]="w.warehouseId">{{ w.warehouseName }}</option> }
+        </select>
+      </div>
+      <div class="fgroup">
+        <label for="ns" class="lbl">Transportista</label>
+        <select id="ns" class="field" name="shipperId" [ngModel]="shipperId()" (ngModelChange)="shipperId.set(+$event)">
+          <option [ngValue]="0">Sin asignar</option>
+          @for (s of shippers(); track s.shipperId) { <option [ngValue]="s.shipperId">{{ s.shipperName }}</option> }
+        </select>
+      </div>
+    </div>
+    <span class="muted">Vendedor: <strong>{{ auth.session()?.username }}</strong> (sale del token, no del formulario).</span>
+  </section>
+
+  <section class="card sec">
+    <div class="row between">
+      <h2>3 · Productos</h2>
+      <button type="button" class="ghost" (click)="addLine()">Agregar producto</button>
+    </div>
+    @for (l of view(); track l.key) {
+      <div class="line">
+        <div class="fgroup span2">
+          <label [for]="'np' + l.key" class="lbl">Producto</label>
+          <select [id]="'np' + l.key" class="field" [name]="'np' + l.key" [ngModel]="l.productId" (ngModelChange)="patchLine(l.key, { productId: +$event })">
+            <option [ngValue]="0">Selecciona un producto</option>
+            @for (p of sortedProducts(); track p.productId) { <option [ngValue]="p.productId">{{ p.productName }} · {{ money(p.price) }}</option> }
+          </select>
+        </div>
+        <div class="fgroup">
+          <label [for]="'nq' + l.key" class="lbl">Cantidad</label>
+          <input [id]="'nq' + l.key" class="field" type="number" min="1" max="10000" [name]="'nq' + l.key"
+                 [ngModel]="l.quantity" (ngModelChange)="patchLine(l.key, { quantity: +$event })" />
+        </div>
+        <div class="info">
+          <span>Disponible: <strong [style.color]="l.short ? '#991B1B' : '#166534'">{{ l.avail }}</strong></span>
+          <span>Precio: <strong>{{ l.price }}</strong></span>
+          <span>Línea: <strong style="color: var(--ink)">{{ money(l.total) }}</strong></span>
+        </div>
+        @if (view().length > 1) { <button type="button" class="ghost" (click)="removeLine(l.key)" aria-label="Quitar producto">Quitar</button> }
+      </div>
+    }
+    <div class="sum"><span class="muted" style="font-size: 17px">Total estimado</span><strong>{{ money(total()) }}</strong></div>
+  </section>
+
+  @if (error(); as e) {
+    <div class="alert err" role="alert"><strong>{{ e.title }}</strong>@for (m of e.messages; track m) { <span>{{ m }}</span> }</div>
+  }
+  <div class="row end">
+    <button type="button" class="ghost" (click)="reset()">Limpiar</button>
+    <button type="submit" class="primary" style="min-height: 48px" [disabled]="busy()">{{ busy() ? 'Registrando…' : 'Registrar pedido' }}</button>
+  </div>
+</form>
