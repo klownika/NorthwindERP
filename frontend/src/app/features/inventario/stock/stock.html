@@ -1,0 +1,37 @@
+<div class="stack">
+  <div class="filters">
+    <div class="fgroup" style="flex: 1 1 240px">
+      <label for="sq" class="lbl">Producto</label>
+      <input id="sq" class="field" [(ngModel)]="q" placeholder="Filtrar por nombre" />
+    </div>
+    <div class="fgroup" style="flex: 0 1 260px">
+      <label for="sw" class="lbl">Almacén</label>
+      <select id="sw" class="field" [ngModel]="wh()" (ngModelChange)="wh.set(+$event)">
+        <option [ngValue]="0">Todos los almacenes</option>
+        @for (w of warehouses(); track w.warehouseId) { <option [ngValue]="w.warehouseId">{{ w.warehouseName }}</option> }
+      </select>
+    </div>
+    <button type="button" class="pill tall" [class.on]="lowOnly()" [attr.aria-pressed]="lowOnly()" (click)="lowOnly.set(!lowOnly())">Solo por reponer</button>
+  </div>
+
+  <app-load-state [loading]="load.loading()" [error]="load.error()" />
+  <app-pager [pager]="pager" />
+
+  <div class="table-box">
+    <div style="min-width: 860px">
+      <div class="thr" [style.grid-template-columns]="cols">
+        <div>Almacén</div><div>Producto</div><div class="r">Stock</div><div class="r">Mínimo</div><div>Estado</div><div>Kardex</div>
+      </div>
+      @for (r of pager.rows(); track r.warehouseId + '-' + r.productId) {
+        <div class="tr" [style.grid-template-columns]="cols">
+          <div>{{ r.warehouseName }}</div><div class="sb">{{ r.productName }}</div>
+          <div class="r b">{{ int(r.quantity) }}</div><div class="r muted">{{ int(r.minStockLevel) }}</div>
+          <div><span class="tag" [class.bad]="r.needsRestock" [class.ok]="!r.needsRestock">{{ r.needsRestock ? 'Reponer' : 'OK' }}</span></div>
+          <div class="sb" [style.color]="r.kardexOk ? '#166534' : '#991B1B'">{{ r.kardexOk ? 'Cuadra' : 'Descuadre' }}</div>
+        </div>
+      } @empty {
+        @if (!load.loading()) { <div class="empty">No hay filas de stock con este filtro.</div> }
+      }
+    </div>
+  </div>
+</div>
