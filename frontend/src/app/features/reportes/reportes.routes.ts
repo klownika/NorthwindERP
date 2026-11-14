@@ -15,4 +15,8 @@ export const REPORTES_ROUTES: Routes = [
     path: 'anio-clientes', loadComponent: () => import('./anio-clientes/anio-clientes').then((m) => m.AnioClientesComponent),
     data: { module: 'reportes', title: 'Por año · clientes', subtitle: 'Pedidos, ventas y promedio por línea de cada cliente en el año.', src: 'GET /api/reports/sales-by-customer-year · JOIN + GROUP BY + COUNT/SUM/AVG' },
   },
+  {
+    path: 'anio-empleados', loadComponent: () => import('./anio-empleados/anio-empleados').then((m) => m.AnioEmpleadosComponent),
+    data: { module: 'reportes', title: 'Por año · empleados', subtitle: 'Pedidos, ventas y ticket promedio de cada vendedor en el año.', src: 'GET /api/reports/sales-by-employee-year · JOIN + GROUP BY + COUNT/SUM' },
+  },
 ];
