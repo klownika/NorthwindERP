@@ -19,4 +19,8 @@ export const INVENTARIO_ROUTES: Routes = [
     path: 'almacenes', loadComponent: () => import('./almacenes/almacenes').then((m) => m.AlmacenesComponent),
     data: { module: 'inventario', title: 'Almacenes', subtitle: 'Almacenes, su responsable y el estado de su stock.', src: 'GET /api/inventory/warehouses · Warehouses + Employees' },
   },
+  {
+    path: 'proveedores', loadComponent: () => import('./proveedores/proveedores').then((m) => m.ProveedoresComponent),
+    data: { module: 'inventario', title: 'Proveedores', subtitle: 'Proveedores que surten el catálogo.', src: 'GET /api/suppliers · Suppliers' },
+  },
 ];

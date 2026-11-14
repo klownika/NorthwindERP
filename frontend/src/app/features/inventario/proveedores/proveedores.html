@@ -1,0 +1,23 @@
+<div class="stack">
+  <div class="fgroup" style="max-width: 420px">
+    <label for="pq" class="lbl">Buscar proveedor</label>
+    <input id="pq" class="field" [(ngModel)]="q" placeholder="Nombre, ciudad o país" />
+  </div>
+  <app-load-state [loading]="load.loading()" [error]="load.error()" />
+  <app-pager [pager]="pager" />
+  <div class="table-box">
+    <div style="min-width: 900px">
+      <div class="thr" [style.grid-template-columns]="cols">
+        <div>Proveedor</div><div>Contacto</div><div>Ciudad</div><div>País</div><div>Teléfono</div><div class="r">Productos</div>
+      </div>
+      @for (s of pager.rows(); track s.supplierId) {
+        <div class="tr" [style.grid-template-columns]="cols">
+          <div class="sb">{{ s.supplierName }}</div><div>{{ s.contactName }}</div><div>{{ s.city }}</div>
+          <div>{{ s.country }}</div><div>{{ s.phone }}</div><div class="r b">{{ s.products }}</div>
+        </div>
+      } @empty {
+        @if (!load.loading()) { <div class="empty">No hay proveedores con ese filtro.</div> }
+      }
+    </div>
+  </div>
+</div>
