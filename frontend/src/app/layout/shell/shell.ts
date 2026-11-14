@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, NavigationEnd, NavigationStart, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { NavigationEnd, NavigationStart, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { IconComponent } from '../../shared/ui/icon';
@@ -19,7 +19,6 @@ const MINI_KEY = 'stockin.sidebar.mini';
 })
 export class ShellComponent {
   private router = inject(Router);
-  private route = inject(ActivatedRoute);
   readonly auth = inject(AuthService);
   readonly page = inject(PageService);
   readonly lowStock = inject(LowStockService);
@@ -45,9 +44,9 @@ export class ShellComponent {
       filter((e) => e instanceof NavigationEnd),
       startWith(null),
       map(() => {
-        let r = this.route;
-        while (r.firstChild) r = r.firstChild;
-        return r.snapshot.data as PageData;
+        let s = this.router.routerState.snapshot.root;
+        while (s.firstChild) s = s.firstChild;
+        return s.data as PageData;
       }),
     ),
     { initialValue: {} as PageData },
