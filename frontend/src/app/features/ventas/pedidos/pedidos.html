@@ -1,0 +1,42 @@
+<div class="stack">
+  <div class="filters">
+    <div class="fgroup" style="flex: 1 1 240px">
+      <label for="oq" class="lbl">Cliente</label>
+      <input id="oq" class="field" [(ngModel)]="q" placeholder="Nombre del cliente" />
+    </div>
+    <div class="fgroup" style="flex: 0 1 220px">
+      <label for="oe" class="lbl">Vendedor</label>
+      <select id="oe" class="field" [ngModel]="emp()" (ngModelChange)="setEmp(+$event)">
+        <option [ngValue]="0">Todos</option>
+        @for (e of employees(); track e.employeeId) { <option [ngValue]="e.employeeId">{{ e.fullName }}</option> }
+      </select>
+    </div>
+    <div class="fgroup" style="flex: 0 1 160px">
+      <label for="oy" class="lbl">Año</label>
+      <select id="oy" class="field" [(ngModel)]="year">
+        <option value="">Todos</option>
+        @for (y of years(); track y) { <option [value]="y">{{ y }}</option> }
+      </select>
+    </div>
+  </div>
+
+  <app-load-state [loading]="load.loading()" [error]="load.error()" />
+  <app-pager [pager]="pager" />
+
+  <div class="table-box">
+    <div style="min-width: 960px">
+      <div class="thr" [style.grid-template-columns]="cols">
+        <div>Pedido</div><div>Fecha</div><div>Cliente</div><div>Vendedor</div><div>Transportista</div><div class="r">Líneas</div><div class="r">Total</div>
+      </div>
+      @for (o of pager.rows(); track o.orderId) {
+        <div class="tr" [style.grid-template-columns]="cols">
+          <div><a class="linkbtn" [routerLink]="['/ventas/pedidos', o.orderId]">#{{ o.orderId }}</a></div>
+          <div>{{ fmtDate(o.orderDate) }}</div><div class="sb">{{ o.customerName }}</div><div>{{ o.employeeName }}</div>
+          <div>{{ o.shipperName ?? '—' }}</div><div class="r">{{ o.lineCount }}</div><div class="r b">{{ money(o.orderTotal) }}</div>
+        </div>
+      } @empty {
+        @if (!load.loading()) { <div class="empty">No hay pedidos con estos filtros.</div> }
+      }
+    </div>
+  </div>
+</div>

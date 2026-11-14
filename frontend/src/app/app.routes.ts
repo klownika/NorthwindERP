@@ -28,6 +28,7 @@ export const routes: Routes = [
         data: { title: 'Inicio', subtitle: 'Resumen de ventas, pedidos e inventario.', src: 'GET /api/orders · GET /api/reports/sales-by-customer · vw_stock_status' },
       },
       { path: 'inventario', loadChildren: () => import('./features/inventario/inventario.routes').then((m) => m.INVENTARIO_ROUTES) },
+      { path: 'ventas', loadChildren: () => import('./features/ventas/ventas.routes').then((m) => m.VENTAS_ROUTES) },
     ],
   },
   { path: '**', redirectTo: '' },
