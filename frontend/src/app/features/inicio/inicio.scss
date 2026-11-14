@@ -1,0 +1,10 @@
+:host { display: flex; flex-direction: column; gap: 20px; }
+.kpi { display: flex; flex-direction: column; gap: 8px; padding: 18px 20px; text-decoration: none; color: inherit; }
+.kpi:hover { border-color: var(--or-400); }
+.lab { font-size: 13px; font-weight: 700; color: var(--ink-4); }
+.val { font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
+.hint { font-size: 12px; color: var(--or-800); font-weight: 600; }
+.box { padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; }
+.box-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.toprow { display: flex; flex-direction: column; gap: 6px; }
+.toprow-h { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; }

@@ -1,0 +1,31 @@
+.login {
+  position: relative; min-height: 100vh; overflow: hidden; background: #fff;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 40px; padding: 48px 6vw 160px;
+}
+.bg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.brand { position: relative; flex: 1 1 480px; max-width: 600px; display: flex; flex-direction: column; gap: 28px; }
+.logo-row { display: flex; align-items: center; gap: 12px; }
+.logo {
+  display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 14px; color: #fff;
+  background: linear-gradient(180deg, #f47a2c 0%, #e2600f 48%, #c2410c 52%, #b53c0a 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55), 0 10px 22px -8px rgba(234, 88, 12, .8);
+}
+.brand-txt { font-family: var(--font-display); font-size: 28px; font-weight: 800; letter-spacing: -.01em; color: var(--ink); span { color: var(--or-600); } }
+h1 { margin: 0; font-size: 60px; line-height: 1.02; font-weight: 800; letter-spacing: -.02em; color: var(--ink); text-wrap: balance; span { color: var(--or-700); } }
+.lead { margin: 0; font-size: 18px; line-height: 1.5; color: var(--ink-2); max-width: 460px; }
+ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 15px; color: #292524; }
+li { display: flex; align-items: center; gap: 12px; }
+.ck {
+  display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 999px; color: #fff;
+  background: linear-gradient(180deg, #f47a2c, #c2410c); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5);
+}
+.panel {
+  position: relative; flex: 0 1 430px; width: 100%; padding: 32px; border-radius: 24px; display: flex; flex-direction: column; gap: 20px;
+  background: rgba(255, 255, 255, .78); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, .95);
+  box-shadow: inset 0 1px 0 #fff, 0 40px 80px -30px rgba(194, 65, 12, .45), 0 2px 6px rgba(194, 65, 12, .05);
+}
+.topline { position: absolute; top: 0; left: 32px; right: 32px; height: 4px; border-radius: 0 0 4px 4px; background: linear-gradient(90deg, #dc2626, #f97316, #fbbf24); }
+.head { display: flex; flex-direction: column; gap: 6px; h2 { margin: 0; font-size: 30px; font-weight: 800; } p { margin: 0; font-size: 15px; color: var(--ink-3); } }
+.pw { display: flex; gap: 8px; .ghost { flex: 0 0 auto; min-height: 44px; } }
+.big { min-height: 52px; font-size: 16px; }
+.hint { margin: 0; font-size: 12px; line-height: 1.5; color: var(--ink-3); code { font-size: 11px; } }

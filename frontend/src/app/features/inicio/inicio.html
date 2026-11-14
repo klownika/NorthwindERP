@@ -1,0 +1,44 @@
+<app-load-state [loading]="load.loading()" [error]="load.error()" />
+
+<div class="grid-auto" style="--min: 220px">
+  @for (k of kpis(); track k.label) {
+    <a class="card accent kpi" [routerLink]="k.link" [queryParams]="k.q">
+      <span class="lab">{{ k.label }}</span>
+      <span class="kpi-v val">{{ k.value }}</span>
+      <span class="hint">{{ k.hint }}</span>
+    </a>
+  }
+</div>
+
+<div class="grid-auto" style="--min: 420px">
+  <section class="card box">
+    <div class="box-head">
+      <h2 class="section-title">Últimos pedidos</h2>
+      <a class="linkbtn" routerLink="/ventas/pedidos">Ver todos</a>
+    </div>
+    <div>
+      @for (o of recent(); track o.orderId) {
+        <div class="tr" style="grid-template-columns: 96px minmax(0, 1fr) 110px">
+          <div><a class="linkbtn" [routerLink]="['/ventas/pedidos', o.orderId]">#{{ o.orderId }}</a></div>
+          <div><span class="sb" style="display: block">{{ o.customerName }}</span><span class="muted">{{ fmtDate(o.orderDate) }}</span></div>
+          <div class="r b">{{ money(o.orderTotal) }}</div>
+        </div>
+      } @empty {
+        @if (!load.loading()) { <div class="empty">Aún no hay pedidos.</div> }
+      }
+    </div>
+  </section>
+
+  <section class="card box">
+    <div class="box-head">
+      <h2 class="section-title">Top 5 clientes</h2>
+      <a class="linkbtn" routerLink="/reportes/por-cliente">Ver reporte</a>
+    </div>
+    @for (t of top(); track t.customerId) {
+      <div class="toprow">
+        <div class="toprow-h"><span class="sb">{{ t.customerName }}</span><span class="b">{{ money(t.totalSales) }}</span></div>
+        <div class="track"><div class="bar" [style.width]="t.pct"></div></div>
+      </div>
+    }
+  </section>
+</div>
