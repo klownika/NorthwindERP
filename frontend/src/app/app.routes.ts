@@ -27,6 +27,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/inicio/inicio').then((m) => m.InicioComponent),
         data: { title: 'Inicio', subtitle: 'Resumen de ventas, pedidos e inventario.', src: 'GET /api/orders · GET /api/reports/sales-by-customer · vw_stock_status' },
       },
+      { path: 'inventario', loadChildren: () => import('./features/inventario/inventario.routes').then((m) => m.INVENTARIO_ROUTES) },
     ],
   },
   { path: '**', redirectTo: '' },
