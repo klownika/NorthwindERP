@@ -222,3 +222,15 @@ Authorization: Bearer {{token}}
 ### Vista 2: ventas por país (el primero es USA)
 GET {{host}}/api/reports/sales-by-country
 Authorization: Bearer {{token}}
+
+### Ventas por cliente y año (todos los años)
+GET {{host}}/api/reports/sales-by-customer-year
+Authorization: Bearer {{token}}
+
+### Solo 1997 y un cliente
+GET {{host}}/api/reports/sales-by-customer-year?year=1997&customerId=20
+Authorization: Bearer {{token}}
+
+### Año fuera de rango -> 400
+GET {{host}}/api/reports/sales-by-customer-year?year=1800
+Authorization: Bearer {{token}}

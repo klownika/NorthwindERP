@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NorthwindERP.API.DTOs;
@@ -36,6 +37,24 @@ public class ReportsController : ControllerBase
     public async Task<ActionResult<IEnumerable<CountrySalesDto>>> SalesByCountry(CancellationToken ct)
     {
         var rows = await _reports.GetSalesByCountryAsync(ct);
+        return Ok(rows.Select(r => r.ToDto()));
+    }
+
+    /// <summary>
+    /// Ventas por cliente con totales por año: une Customers, Orders, OrderDetails y
+    /// Products y agrupa por cliente y año (COUNT de pedidos, SUM del total y AVG por línea).
+    /// Sin filtros devuelve todos los años.
+    /// </summary>
+    /// <param name="year">Solo ese año (1990-2100).</param>
+    /// <param name="customerId">Solo ese cliente.</param>
+    /// <param name="ct">Token de cancelación.</param>
+    [HttpGet("sales-by-customer-year")]
+    [ProducesResponseType(typeof(IEnumerable<CustomerYearSalesDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<IEnumerable<CustomerYearSalesDto>>> SalesByCustomerYear(
+        [FromQuery, Range(1990, 2100)] int? year, [FromQuery] int? customerId, CancellationToken ct)
+    {
+        var rows = await _reports.GetSalesByCustomerYearAsync(year, customerId, ct);
         return Ok(rows.Select(r => r.ToDto()));
     }
 }
