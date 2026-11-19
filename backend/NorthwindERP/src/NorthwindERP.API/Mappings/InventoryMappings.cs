@@ -17,9 +17,6 @@ public static class InventoryMappings
     public static StockDto ToDto(this StockItem s) =>
         new(s.WarehouseId, s.WarehouseName, s.ProductId, s.ProductName, s.Quantity, s.MinStockLevel, s.NeedsRestock, s.KardexOk);
 
-    public static NewProduct ToModel(this CreateProductRequest r) =>
-        new(r.ProductName, r.CategoryId, r.SupplierId, r.Unit, r.Price!.Value);
-
     public static KardexEntryDto ToDto(this KardexEntry k) =>
         new(k.TransactionId, k.TransactionDate, k.WarehouseId, k.WarehouseName, k.ProductId, k.ProductName,
             k.TransactionType, k.Quantity, k.EmployeeId, k.EmployeeName, k.OrderId, k.Notes);

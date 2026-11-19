@@ -102,7 +102,6 @@ Todos requieren JWT, excepto `login` y `health`.
 | GET | `/api/inventory/warehouses` | Almacenes con su responsable | `Warehouses` + `Employees` |
 | GET | `/api/products` | Catálogo con categoría, proveedor y precio (filtros: `search`, `categoryId`) | `Products` + joins |
 | GET | `/api/products/{id}` | Un producto | `Products` + joins |
-| POST | `/api/products` | Registra un producto y le crea stock 0 en cada almacén | `INSERT Products` + `INSERT InventoryStock` |
 | GET | `/api/categories` | Categorías | `Categories` |
 
 ### 📊 Reports (nuevo)
