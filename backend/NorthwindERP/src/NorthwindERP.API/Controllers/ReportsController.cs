@@ -27,4 +27,15 @@ public class ReportsController : ControllerBase
         var rows = await _reports.GetSalesByCustomerAsync(ct);
         return Ok(rows.Select(r => r.ToDto()));
     }
+
+    /// <summary>
+    /// Vista 2 (por región): total vendido por país, con cuántos clientes compraron y
+    /// cuántos pedidos hubo. Sale de vw_sales_by_country.
+    /// </summary>
+    [HttpGet("sales-by-country")]
+    public async Task<ActionResult<IEnumerable<CountrySalesDto>>> SalesByCountry(CancellationToken ct)
+    {
+        var rows = await _reports.GetSalesByCountryAsync(ct);
+        return Ok(rows.Select(r => r.ToDto()));
+    }
 }

@@ -218,3 +218,7 @@ Authorization: Bearer {{token}}
 ### Vista 2: ventas por cliente (solo clientes que compraron)
 GET {{host}}/api/reports/sales-by-customer
 Authorization: Bearer {{token}}
+
+### Vista 2: ventas por país (el primero es USA)
+GET {{host}}/api/reports/sales-by-country
+Authorization: Bearer {{token}}
