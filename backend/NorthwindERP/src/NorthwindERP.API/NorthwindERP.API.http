@@ -78,3 +78,12 @@ Authorization: Bearer {{token}}
 ### Eliminar pedido (solo Admin): cambia el id por el que creaste
 DELETE {{host}}/api/orders/10444
 Authorization: Bearer {{token}}
+
+############################ LOGÍSTICA ############################
+
+### Empleados (9 en Northwind)
+GET {{host}}/api/employees
+Authorization: Bearer {{token}}
+
+### Sin token -> 401
+GET {{host}}/api/employees
