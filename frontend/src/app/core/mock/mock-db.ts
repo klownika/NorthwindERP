@@ -23,8 +23,8 @@ export interface RawOrder {
 
 /** Usuarios de prueba para el login simulado. */
 export const MOCK_USERS = [
-  { userId: 1, username: 'admin', password: 'Admin123!', role: 'Admin', employeeId: 1, mustChangePassword: false },
-  { userId: 2, username: 'vendedor', password: 'Vendedor123!', role: 'Vendedor', employeeId: 3, mustChangePassword: false },
+  { userId: 1, username: 'admin', password: 'Admin123!', role: 'Admin', employeeId: 1, changePassword: false },
+  { userId: 2, username: 'vendedor', password: 'Vendedor123!', role: 'Vendedor', employeeId: 3, changePassword: false },
 ];
 
 const SESSION_KEY = 'stockin.session';

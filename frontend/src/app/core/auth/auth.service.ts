@@ -34,7 +34,7 @@ export class AuthService {
     if (!u) return this.db.fail(401, 'Unauthorized', 'Invalid username or password.');
     const res: LoginResponse = {
       token: `mock.${btoa(u.username)}.${Date.now()}`, expiresAtUtc: new Date(Date.now() + 8 * 3600_000).toISOString(),
-      userId: u.userId, username: u.username, role: u.role, employeeId: u.employeeId, mustChangePassword: u.mustChangePassword,
+      userId: u.userId, username: u.username, role: u.role, employeeId: u.employeeId, changePassword: u.changePassword,
     };
     return this.db.respond(res).pipe(tap((s) => this.save(s)));
   }
@@ -53,7 +53,7 @@ export class AuthService {
     return this.db.respond<void>(undefined).pipe(
       tap(() => {
         const s = this._session();
-        if (s) this.save({ ...s, mustChangePassword: false });
+        if (s) this.save({ ...s, changePassword: false });
       }),
     );
   }

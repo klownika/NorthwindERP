@@ -8,7 +8,7 @@
 export interface LoginRequest { username: string; password: string; }
 export interface LoginResponse {
   token: string; expiresAtUtc: string; userId: number; username: string;
-  role: string | null; employeeId: number; mustChangePassword: boolean;
+  role: string | null; employeeId: number; changePassword: boolean;
 }
 export interface CurrentUser { userId: number; username: string | null; role: string | null; employeeId: number | null; }
 export interface ChangePasswordRequest { currentPassword: string; newPassword: string; }
