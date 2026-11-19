@@ -30,4 +30,13 @@ public class ProductsController : ControllerBase
         var products = await _inventory.GetProductsAsync(search, categoryId, ct);
         return Ok(products.Select(p => p.ToDto()));
     }
+
+    /// <summary>Lista las categorías; son los filtros (pills) que salen arriba del catálogo.</summary>
+    // La "/" del inicio hace que la ruta no herede el api/products del controller
+    [HttpGet("/api/categories")]
+    public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories(CancellationToken ct)
+    {
+        var categories = await _inventory.GetCategoriesAsync(ct);
+        return Ok(categories.Select(c => c.ToDto()));
+    }
 }

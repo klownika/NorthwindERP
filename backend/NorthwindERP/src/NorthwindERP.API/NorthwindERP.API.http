@@ -126,3 +126,7 @@ Authorization: Bearer {{token}}
 ### Buscar por nombre dentro de una categoría
 GET {{host}}/api/products?search=cha&categoryId=1
 Authorization: Bearer {{token}}
+
+### Categorías (8)
+GET {{host}}/api/categories
+Authorization: Bearer {{token}}
