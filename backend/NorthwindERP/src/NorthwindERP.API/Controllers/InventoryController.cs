@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NorthwindERP.API.DTOs;
@@ -34,5 +35,42 @@ public class InventoryController : ControllerBase
     {
         var stock = await _inventory.GetStockAsync(new StockFilter(warehouseId, productId, lowStockOnly), ct);
         return Ok(stock.Select(s => s.ToDto()));
+    }
+
+    /// <summary>
+    /// Movimientos del Kardex (tabla InventoryTransactions), los más recientes primero.
+    /// Cada venta hecha con sp_register_order deja un OUTBOUND "Sale - order N" y cada
+    /// pedido eliminado con sp_delete_order deja el INBOUND que devuelve el stock.
+    /// </summary>
+    /// <param name="productId">Solo ese producto.</param>
+    /// <param name="warehouseId">Solo ese almacén.</param>
+    /// <param name="type">INBOUND u OUTBOUND.</param>
+    /// <param name="from">Desde esta fecha (yyyy-MM-dd).</param>
+    /// <param name="to">Hasta esta fecha, inclusive (yyyy-MM-dd).</param>
+    /// <param name="ct">Token de cancelación.</param>
+    /// <param name="take">Cuántos movimientos devolver, de 1 a 1000 (500 si no se manda).</param>
+    [HttpGet("kardex")]
+    [ProducesResponseType(typeof(IEnumerable<KardexEntryDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<IEnumerable<KardexEntryDto>>> GetKardex(
+        [FromQuery] int? productId,
+        [FromQuery] int? warehouseId,
+        [FromQuery] string? type,
+        [FromQuery] DateTime? from,
+        [FromQuery] DateTime? to,
+        CancellationToken ct,
+        [FromQuery, Range(1, 1000)] int take = 500)
+    {
+        // Se acepta "outbound" o "Outbound"; a la BD siempre llega en mayúsculas
+        var normalizedType = type?.Trim().ToUpperInvariant();
+        if (normalizedType is not null && !TransactionTypes.All.Contains(normalizedType))
+        {
+            ModelState.AddModelError(nameof(type), "Type must be INBOUND or OUTBOUND.");
+            return ValidationProblem(ModelState);
+        }
+
+        var filter = new KardexFilter(productId, warehouseId, normalizedType, from, to, take);
+        var entries = await _inventory.GetKardexAsync(filter, ct);
+        return Ok(entries.Select(e => e.ToDto()));
     }
 }

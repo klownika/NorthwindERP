@@ -192,3 +192,19 @@ Authorization: Bearer {{token}}
 ### Solo lo que hay que reponer
 GET {{host}}/api/inventory/stock?lowStockOnly=true
 Authorization: Bearer {{token}}
+
+### Últimos 3 movimientos de un producto (después de un pedido sale el OUTBOUND "Sale - order N")
+GET {{host}}/api/inventory/kardex?productId=11&take=3
+Authorization: Bearer {{token}}
+
+### Solo salidas de un almacén
+GET {{host}}/api/inventory/kardex?warehouseId=1&type=OUTBOUND
+Authorization: Bearer {{token}}
+
+### Tipo inválido -> 400
+GET {{host}}/api/inventory/kardex?type=OTHER
+Authorization: Bearer {{token}}
+
+### take fuera de rango -> 400
+GET {{host}}/api/inventory/kardex?take=5000
+Authorization: Bearer {{token}}
