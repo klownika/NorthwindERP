@@ -7,6 +7,7 @@ public interface ICustomerService
 {
     Task<IReadOnlyList<Customer>> GetAllAsync(CancellationToken ct = default);
     Task<Customer> GetByIdAsync(int id, CancellationToken ct = default);
+    Task<Customer> CreateAsync(Customer customer, CancellationToken ct = default);
     Task<Customer> UpdateContactAsync(int id, CustomerContactUpdate update, CancellationToken ct = default);
 }
 
@@ -14,5 +15,6 @@ public interface ICustomerRepository
 {
     Task<IReadOnlyList<Customer>> GetAllAsync(CancellationToken ct = default);
     Task<Customer?> GetByIdAsync(int id, CancellationToken ct = default);
+    void Add(Customer customer);
     Task SaveChangesAsync(CancellationToken ct = default);
 }

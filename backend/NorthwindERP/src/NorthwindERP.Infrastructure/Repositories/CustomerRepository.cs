@@ -18,5 +18,9 @@ public class CustomerRepository : ICustomerRepository
     public async Task<Customer?> GetByIdAsync(int id, CancellationToken ct = default)
         => await _db.Customers.FirstOrDefaultAsync(c => c.CustomerId == id, ct);
 
+    // El INSERT recién se manda en SaveChangesAsync; ahí PostgreSQL genera el
+    // CustomerID con la secuencia SERIAL y EF lo deja cargado en la entidad
+    public void Add(Customer customer) => _db.Customers.Add(customer);
+
     public Task SaveChangesAsync(CancellationToken ct = default) => _db.SaveChangesAsync(ct);
 }

@@ -35,6 +35,20 @@ Content-Type: application/json
 GET {{host}}/api/customers/9999
 Authorization: Bearer {{token}}
 
+### Registrar un cliente sin pedido -> 201 + Location
+POST {{host}}/api/customers
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "customerName": "Minimarket San Isidro", "contactName": "Lucía Paredes", "address": "Av. Javier Prado 450", "city": "Lima", "postalCode": "15036", "country": "Peru" }
+
+### Sin nombre -> 400
+POST {{host}}/api/customers
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "city": "Lima" }
+
 ############################ PEDIDOS ############################
 
 ### Crear pedido con cliente nuevo

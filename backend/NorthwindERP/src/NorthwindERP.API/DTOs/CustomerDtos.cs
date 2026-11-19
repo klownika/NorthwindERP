@@ -22,7 +22,7 @@ public class UpdateCustomerContactRequest
     [StringLength(15)] public string? Country { get; set; }
 }
 
-/// <summary>Datos del cliente nuevo al crear un pedido (POST /api/orders/with-customer).</summary>
+/// <summary>Datos de un cliente nuevo: POST /api/customers y el newCustomer de POST /api/orders/with-customer.</summary>
 public class NewCustomerRequest
 {
     [Required, StringLength(50)]

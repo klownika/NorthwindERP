@@ -18,6 +18,17 @@ public class CustomerService : ICustomerService
         => await _customers.GetByIdAsync(id, ct)
            ?? throw new NotFoundException($"No existe el cliente {id}.");
 
+    public async Task<Customer> CreateAsync(Customer customer, CancellationToken ct = default)
+    {
+        // El DTO ya pide el nombre, pero un nombre con puros espacios pasaría igual
+        if (string.IsNullOrWhiteSpace(customer.CustomerName))
+            throw new BusinessRuleException("El nombre del cliente es obligatorio.");
+
+        _customers.Add(customer);
+        await _customers.SaveChangesAsync(ct);
+        return customer;
+    }
+
     public async Task<Customer> UpdateContactAsync(int id, CustomerContactUpdate update, CancellationToken ct = default)
     {
         var nothingToUpdate =
