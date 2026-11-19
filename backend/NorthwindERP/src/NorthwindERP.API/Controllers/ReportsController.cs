@@ -57,4 +57,20 @@ public class ReportsController : ControllerBase
         var rows = await _reports.GetSalesByCustomerYearAsync(year, customerId, ct);
         return Ok(rows.Select(r => r.ToDto()));
     }
+
+    /// <summary>
+    /// Ventas por empleado con totales por año: cuántos pedidos registró cada vendedor,
+    /// cuánto vendió y su ticket promedio. Mismo JOIN que el de clientes pero desde Employees.
+    /// </summary>
+    /// <param name="year">Solo ese año (1990-2100).</param>
+    /// <param name="ct">Token de cancelación.</param>
+    [HttpGet("sales-by-employee-year")]
+    [ProducesResponseType(typeof(IEnumerable<EmployeeYearSalesDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<IEnumerable<EmployeeYearSalesDto>>> SalesByEmployeeYear(
+        [FromQuery, Range(1990, 2100)] int? year, CancellationToken ct)
+    {
+        var rows = await _reports.GetSalesByEmployeeYearAsync(year, ct);
+        return Ok(rows.Select(r => r.ToDto()));
+    }
 }

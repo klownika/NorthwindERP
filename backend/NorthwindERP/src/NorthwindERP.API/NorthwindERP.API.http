@@ -234,3 +234,7 @@ Authorization: Bearer {{token}}
 ### Año fuera de rango -> 400
 GET {{host}}/api/reports/sales-by-customer-year?year=1800
 Authorization: Bearer {{token}}
+
+### Ventas por empleado en 1997 (una fila por vendedor)
+GET {{host}}/api/reports/sales-by-employee-year?year=1997
+Authorization: Bearer {{token}}
