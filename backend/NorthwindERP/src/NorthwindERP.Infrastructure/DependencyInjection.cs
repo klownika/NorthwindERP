@@ -18,11 +18,13 @@ public static class DependencyInjection
         if (string.IsNullOrWhiteSpace(connectionString))
             throw new InvalidOperationException("ConnectionStrings:Supabase no está configurada (usa dotnet user-secrets).");
 
+        // EF Core para las tablas simples (cuentas, clientes, logística)
         services.AddDbContext<NorthwindDbContext>(options =>
             options
                 .UseNpgsql(connectionString)
                 .UseLowerCaseNamingConvention());
 
+        // Npgsql directo para procedimientos, vistas y consultas con SQL a mano
         services.AddSingleton(_ => NpgsqlDataSource.Create(connectionString));
 
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
@@ -31,6 +33,7 @@ public static class DependencyInjection
         services.AddSingleton<ITokenService, JwtTokenService>();
 
         services.AddScoped<ICustomerRepository, CustomerRepository>();
+        services.AddScoped<ILogisticsRepository, LogisticsRepository>();
 
         services.AddScoped<IOrderService, OrderService>();
 
