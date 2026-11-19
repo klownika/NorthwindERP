@@ -1,6 +1,6 @@
 # NorthwindERP — API (v1)
 
-API REST en **ASP.NET Core 8** sobre la base de datos Northwind en Supabase. Este documento explica cómo funcionan los endpoints, cómo se comunican las capas y dónde se cumplen las reglas de negocio y los requisitos del profesor.
+API REST en **ASP.NET Core 10** sobre la base de datos Northwind en Supabase. Este documento explica cómo funcionan los endpoints, cómo se comunican las capas y dónde se cumplen las reglas de negocio y los requisitos del profesor.
 
 > Complementa a `database/README.md`, que explica la base de datos (tablas, vistas, procedimientos y reglas R1–R9).
 
@@ -22,7 +22,7 @@ API REST en **ASP.NET Core 8** sobre la base de datos Northwind en Supabase. Est
 ┌───────────────────────── NorthwindERP.Core ────────────────────────┐
 │ Entities   → tablas simples (UserAccount, Customer, Employee...)   │
 │ Models     → records de dominio (LoginResult, OrderSummary...)     │
-│ Interfaces → contratos. Services → lógica de Cuentas y Clientes    │
+│ Interfaces → contratos. Services → Cuentas, Clientes y Logística   │
 │ Sin SQL, sin EF, sin HTTP.                                          │
 └───────────────────────────────┬────────────────────────────────────┘
                                 │ implementaciones
@@ -64,7 +64,7 @@ Todos requieren JWT, excepto `login` y `health`.
 |---|---|---|---|---|
 | POST | `/api/auth/login` | Anónimo | Valida usuario y contraseña y devuelve un JWT | `UserAccounts` + `Roles` |
 | GET | `/api/auth/me` | Cualquiera | Datos del usuario del token | — (lee los claims) |
-| POST | `/api/auth/change-password` | Cualquiera | Cambia la contraseña y apaga `MustChangePassword` | `UPDATE UserAccounts` |
+| POST | `/api/auth/change-password` | Cualquiera | Cambia la contraseña y apaga `ChangePassword` | `UPDATE UserAccounts` |
 
 ### 👥 Customers
 
@@ -104,7 +104,7 @@ Todos requieren JWT, excepto `login` y `health`.
 | GET | `/api/products/{id}` | Un producto | `Products` + joins |
 | GET | `/api/categories` | Categorías | `Categories` |
 
-### 📊 Reports (nuevo)
+### 📊 Reports
 
 | Método | Ruta | Qué hace | Requisito |
 |---|---|---|---|
@@ -225,7 +225,8 @@ Los mensajes `NWxxx` están en inglés porque los ve el usuario. Los escribimos 
 3. **El empleado sale del token** en crear y eliminar pedidos, para que nadie actúe a nombre de otro.
 4. **Conexión directa a PostgreSQL** con la cadena de conexión (EF Core y Npgsql). Después de `08_security.sql`, la API REST de Supabase queda cerrada para `anon` y `authenticated`; además esa API (PostgREST) solo puede llamar funciones, no `PROCEDURE`.
 5. **Secretos fuera del repo.** `appsettings.json` trae los valores vacíos; los reales van en `dotnet user-secrets` (cadena de conexión, `Jwt:Key`, `Seed:AdminPassword`).
-6. **El primer Admin lo crea `SeedAdminAsync()` al arrancar,** con `MustChangePassword = true`. La contraseña temporal sale de la configuración, nunca del código.
+6. **El primer Admin lo crea `SeedAdminAsync()` al arrancar,** con `ChangePassword = true`. La contraseña temporal sale de la configuración, nunca del código.
+7. **CORS.** Solo los orígenes de `Cors:AllowedOrigins` en `appsettings.json` (por defecto `http://localhost:4200`, el frontend de Angular) pueden llamar a la API desde el navegador. `UseCors` va antes de `UseAuthentication` porque el preflight `OPTIONS` llega sin token. Al publicar el frontend se agrega su URL a esa lista.
 
 ---
 
@@ -233,7 +234,7 @@ Los mensajes `NWxxx` están en inglés porque los ve el usuario. Los escribimos 
 
 | # | Paso | Qué demuestra |
 |---|---|---|
-| 1 | `POST /api/auth/login` con el admin → `POST /api/auth/change-password` | Cuentas, hash, MustChangePassword |
+| 1 | `POST /api/auth/login` con el admin → `POST /api/auth/change-password` | Cuentas, hash, ChangePassword |
 | 2 | `GET /api/inventory/stock?warehouseId=1&productId=11` | Stock inicial (anota la cantidad) |
 | 3 | `POST /api/orders/with-customer` con `newCustomer` | **Insertar cliente + pedido**, **Procedimiento 1** |
 | 4 | `GET /api/orders/{id}` | **Vista 1**: productos y total por línea |
@@ -253,7 +254,7 @@ Los mensajes `NWxxx` están en inglés porque los ve el usuario. Los escribimos 
 - **Fechas:** `NOW()` en Supabase está en UTC. Los pedidos nuevos guardan la hora UTC; conviértela en el frontend.
 - **Límites:** `take` acepta de 1 a 1000 en pedidos y en el Kardex, para no devolver tablas enteras por accidente.
 - **Columnas en minúsculas:** PostgreSQL devuelve `orderid`, `customername`, etc.; los servicios leen con esos nombres. En JSON salen en camelCase (`orderId`) por los DTOs.
-- **Pendiente para la v2:** ajustes manuales de inventario y transferencias (siempre vía procedimiento, por R8), compras, pagos y estado del pedido.
+- **Pendiente para la v2:** alta y edición de productos, ajustes manuales de inventario y transferencias (siempre vía procedimiento, por R8), compras, pagos y estado del pedido.
 
 ## Glosario
 
