@@ -16,8 +16,6 @@ public record CustomerDto(
 /// <summary>Cuerpo de PUT /api/customers/{id}. Solo se actualizan los campos enviados.</summary>
 public class UpdateCustomerContactRequest
 {
-    [StringLength(50)] public string? CustomerName { get; set; }
-    [StringLength(50)] public string? ContactName { get; set; }
     [StringLength(50)] public string? Address { get; set; }
     [StringLength(20)] public string? City { get; set; }
     [StringLength(10)] public string? PostalCode { get; set; }

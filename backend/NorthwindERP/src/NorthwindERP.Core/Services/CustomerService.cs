@@ -32,22 +32,16 @@ public class CustomerService : ICustomerService
     public async Task<Customer> UpdateContactAsync(int id, CustomerContactUpdate update, CancellationToken ct = default)
     {
         var nothingToUpdate =
-            string.IsNullOrWhiteSpace(update.CustomerName) &&
-            string.IsNullOrWhiteSpace(update.ContactName) &&
             string.IsNullOrWhiteSpace(update.Address) &&
             string.IsNullOrWhiteSpace(update.City) &&
             string.IsNullOrWhiteSpace(update.PostalCode) &&
             string.IsNullOrWhiteSpace(update.Country);
 
         if (nothingToUpdate)
-            throw new BusinessRuleException("Envía al menos un campo para actualizar.");
+            throw new BusinessRuleException("Envía al menos un campo de dirección para actualizar.");
 
         var customer = await GetByIdAsync(id, ct);
 
-        // Solo se pisa lo que llegó con valor; así la ficha del frontend puede mandar
-        // nada más la dirección sin borrar el nombre
-        if (!string.IsNullOrWhiteSpace(update.CustomerName)) customer.CustomerName = update.CustomerName.Trim();
-        if (!string.IsNullOrWhiteSpace(update.ContactName)) customer.ContactName = update.ContactName.Trim();
         if (!string.IsNullOrWhiteSpace(update.Address)) customer.Address = update.Address.Trim();
         if (!string.IsNullOrWhiteSpace(update.City)) customer.City = update.City.Trim();
         if (!string.IsNullOrWhiteSpace(update.PostalCode)) customer.PostalCode = update.PostalCode.Trim();

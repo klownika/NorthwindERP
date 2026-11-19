@@ -47,9 +47,8 @@ public class CustomersController : ControllerBase
     }
 
     /// <summary>
-    /// Actualiza un cliente: nombre, contacto, dirección, ciudad, código postal y país.
-    /// Todos son opcionales y solo cambia lo que se manda. La tabla customers no tiene
-    /// teléfono, así que el requisito de "actualizar teléfono o dirección" se cubre con la dirección.
+    /// Actualiza la dirección de un cliente. La tabla customers no tiene teléfono,
+    /// por eso solo se editan dirección, ciudad, código postal y país.
     /// </summary>
     [HttpPut("{id:int}")]
     [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
@@ -58,9 +57,7 @@ public class CustomersController : ControllerBase
     public async Task<ActionResult<CustomerDto>> UpdateContact(
         int id, [FromBody] UpdateCustomerContactRequest request, CancellationToken ct)
     {
-        var update = new CustomerContactUpdate(
-            request.CustomerName, request.ContactName,
-            request.Address, request.City, request.PostalCode, request.Country);
+        var update = new CustomerContactUpdate(request.Address, request.City, request.PostalCode, request.Country);
         var customer = await _customers.UpdateContactAsync(id, update, ct);
         return Ok(customer.ToDto());
     }

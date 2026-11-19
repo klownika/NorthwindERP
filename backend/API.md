@@ -73,7 +73,7 @@ Todos requieren JWT, excepto `login` y `health`.
 | GET | `/api/customers` | Lista clientes | — |
 | GET | `/api/customers/{id}` | Un cliente | — |
 | POST | `/api/customers` | Registra un cliente sin pedido (201 + Location) | — |
-| PUT | `/api/customers/{id}` | Actualiza nombre, contacto y dirección (solo lo que se manda) | **"Actualizar teléfono o dirección"** (la tabla no tiene teléfono) |
+| PUT | `/api/customers/{id}` | Actualiza la dirección | **"Actualizar teléfono o dirección"** (la tabla no tiene teléfono) |
 
 ### 🚚 Logística (listas de apoyo para el frontend)
 

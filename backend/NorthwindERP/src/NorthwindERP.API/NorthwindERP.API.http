@@ -24,13 +24,6 @@ Content-Type: application/json
 
 { "address": "Obere Str. 58", "city": "Berlin" }
 
-### Cambiar el nombre y el contacto (lo demás queda igual)
-PUT {{host}}/api/customers/1
-Authorization: Bearer {{token}}
-Content-Type: application/json
-
-{ "customerName": "Alfreds Futterkiste GmbH", "contactName": "Maria Anders" }
-
 ### Body vacío -> 400
 PUT {{host}}/api/customers/1
 Authorization: Bearer {{token}}

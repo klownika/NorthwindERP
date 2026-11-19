@@ -1,10 +1,4 @@
 namespace NorthwindERP.Core.Models;
 
-/// <summary>Datos del cliente a actualizar. Los null o vacíos se ignoran.</summary>
-public record CustomerContactUpdate(
-    string? CustomerName,
-    string? ContactName,
-    string? Address,
-    string? City,
-    string? PostalCode,
-    string? Country);
+/// <summary>Campos de dirección a actualizar. Los null se ignoran.</summary>
+public record CustomerContactUpdate(string? Address, string? City, string? PostalCode, string? Country);
