@@ -39,7 +39,7 @@ public class AuthService : IAuthService
             user.Username,
             user.Role?.RoleName,
             user.EmployeeId,
-            user.MustChangePassword);
+            user.ChangePassword);
     }
 
     public async Task ChangePasswordAsync(int userAccountId, string currentPassword, string newPassword, CancellationToken ct = default)
@@ -55,7 +55,7 @@ public class AuthService : IAuthService
             throw new BusinessRuleException("La nueva contraseña debe ser distinta de la actual.");
 
         user.PasswordHash = _hasher.Hash(newPassword);
-        user.MustChangePassword = false;
+        user.ChangePassword = false;
         await _users.SaveChangesAsync(ct);
     }
 }

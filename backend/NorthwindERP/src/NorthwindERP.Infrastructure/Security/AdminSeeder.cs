@@ -41,7 +41,7 @@ public static class AdminSeeder
             PasswordHash = hasher.Hash(password),
             RoleId = adminRole.RoleId,
             IsActive = true,
-            MustChangePassword = true,
+            ChangePassword = true,
             CreatedAt = DateTime.Now
         });
 

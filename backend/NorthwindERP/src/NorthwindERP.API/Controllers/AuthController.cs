@@ -19,7 +19,7 @@ public class AuthController : ControllerBase
 
     /// <summary>
     /// Valida usuario y contraseña y devuelve un token JWT.
-    /// Si MustChangePassword es true, el frontend debe llevar al usuario a cambiar la contraseña.
+    /// Si ChangePassword es true, el frontend debe llevar al usuario a cambiar la contraseña.
     /// </summary>
     [HttpPost("login")]
     [AllowAnonymous]
@@ -41,7 +41,7 @@ public class AuthController : ControllerBase
             User.FindFirst(CustomClaims.Role)?.Value,
             User.GetEmployeeIdOrNull()));
 
-    /// <summary>Cambia la contraseña del usuario del token y desactiva MustChangePassword.</summary>
+    /// <summary>Cambia la contraseña del usuario del token.</summary>
     [HttpPost("change-password")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

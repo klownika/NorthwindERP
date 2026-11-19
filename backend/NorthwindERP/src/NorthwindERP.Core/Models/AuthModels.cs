@@ -7,7 +7,7 @@ public record LoginResult(
     string Username,
     string? Role,
     int EmployeeId,
-    bool MustChangePassword);
+    bool ChangePassword);
 
 public static class CustomClaims
 {

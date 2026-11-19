@@ -14,7 +14,7 @@ public class UserAccount
     public string PasswordHash { get; set; } = string.Empty;
     public int RoleId { get; set; }
     public bool IsActive { get; set; } = true;
-    public bool MustChangePassword { get; set; } = true;
+    public bool ChangePassword { get; set; } = true;
     public DateTime CreatedAt { get; set; }
 
     public Role? Role { get; set; }
