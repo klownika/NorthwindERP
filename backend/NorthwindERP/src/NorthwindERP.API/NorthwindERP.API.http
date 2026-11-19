@@ -87,3 +87,7 @@ Authorization: Bearer {{token}}
 
 ### Sin token -> 401
 GET {{host}}/api/employees
+
+### Transportistas (3)
+GET {{host}}/api/shippers
+Authorization: Bearer {{token}}
