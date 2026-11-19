@@ -116,3 +116,13 @@ Authorization: Bearer {{token}}
 ### Proveedores (29)
 GET {{host}}/api/suppliers
 Authorization: Bearer {{token}}
+
+############################ INVENTARIO ############################
+
+### Catálogo completo (77 productos)
+GET {{host}}/api/products
+Authorization: Bearer {{token}}
+
+### Buscar por nombre dentro de una categoría
+GET {{host}}/api/products?search=cha&categoryId=1
+Authorization: Bearer {{token}}
