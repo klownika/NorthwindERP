@@ -72,7 +72,8 @@ Todos requieren JWT, excepto `login` y `health`.
 |---|---|---|---|
 | GET | `/api/customers` | Lista clientes | — |
 | GET | `/api/customers/{id}` | Un cliente | — |
-| PUT | `/api/customers/{id}` | Actualiza la dirección | **"Actualizar teléfono o dirección"** (la tabla no tiene teléfono) |
+| POST | `/api/customers` | Registra un cliente sin pedido (201 + Location) | — |
+| PUT | `/api/customers/{id}` | Actualiza nombre, contacto y dirección (solo lo que se manda) | **"Actualizar teléfono o dirección"** (la tabla no tiene teléfono) |
 
 ### 🚚 Logística (listas de apoyo para el frontend)
 
@@ -92,7 +93,7 @@ Todos requieren JWT, excepto `login` y `health`.
 | GET | `/api/orders/customer/{customerId}` | Cualquiera | Historial del cliente | `get_customer_order_history()` | **Procedimiento 2** |
 | DELETE | `/api/orders/{id}` | **Admin** | Elimina el pedido y devuelve el stock | `CALL sp_delete_order` | **Eliminar en cascada** |
 
-### 📦 Inventory + Products — módulo Inventario (solo lectura)
+### 📦 Inventory + Products — módulo Inventario (el stock es de solo lectura)
 
 | Método | Ruta | Qué hace | BD |
 |---|---|---|---|
@@ -100,6 +101,9 @@ Todos requieren JWT, excepto `login` y `health`.
 | GET | `/api/inventory/kardex` | Movimientos (filtros: producto, almacén, `type` = INBOUND/OUTBOUND, fechas, `take`) | `InventoryTransactions` |
 | GET | `/api/inventory/warehouses` | Almacenes con su responsable | `Warehouses` + `Employees` |
 | GET | `/api/products` | Catálogo con categoría, proveedor y precio (filtros: `search`, `categoryId`) | `Products` + joins |
+| GET | `/api/products/{id}` | Un producto | `Products` + joins |
+| POST | `/api/products` | Registra un producto y le crea stock 0 en cada almacén | `INSERT Products` + `INSERT InventoryStock` |
+| PUT | `/api/products/{id}` | Edita nombre, categoría, proveedor, unidad; el precio solo Admin (403) | `UPDATE Products` (nunca el stock) |
 | GET | `/api/categories` | Categorías | `Categories` |
 
 ### 📊 Reports (nuevo)
