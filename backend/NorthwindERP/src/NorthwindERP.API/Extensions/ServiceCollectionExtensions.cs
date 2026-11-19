@@ -93,4 +93,20 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    public const string FrontendCorsPolicy = "Frontend";
+
+    // En local el proxy de Angular evita CORS, pero cuando el frontend se publique en
+    // otro dominio el navegador bloquea las llamadas sin esto. Los orígenes salen de
+    // Cors:AllowedOrigins en appsettings.json (o de variables de entorno en la nube).
+    public static IServiceCollection AddFrontendCors(this IServiceCollection services, IConfiguration configuration)
+    {
+        var allowedOrigins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+
+        services.AddCors(options =>
+            options.AddPolicy(FrontendCorsPolicy, policy =>
+                policy.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod()));
+
+        return services;
+    }
 }

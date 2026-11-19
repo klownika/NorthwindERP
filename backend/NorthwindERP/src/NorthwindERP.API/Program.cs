@@ -13,6 +13,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddSwaggerWithJwt();
+builder.Services.AddFrontendCors(builder.Configuration);
 
 var app = builder.Build();
 
@@ -20,6 +21,8 @@ app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseSwagger();
 app.UseSwaggerUI(c => c.DocumentTitle = "NorthwindERP API");
 app.UseHttpsRedirection();
+// CORS va antes de la autenticación: el preflight (OPTIONS) del navegador llega sin token
+app.UseCors(ServiceCollectionExtensions.FrontendCorsPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
