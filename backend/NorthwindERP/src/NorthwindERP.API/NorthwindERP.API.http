@@ -208,3 +208,7 @@ Authorization: Bearer {{token}}
 ### take fuera de rango -> 400
 GET {{host}}/api/inventory/kardex?take=5000
 Authorization: Bearer {{token}}
+
+### Almacenes con su responsable (3)
+GET {{host}}/api/inventory/warehouses
+Authorization: Bearer {{token}}

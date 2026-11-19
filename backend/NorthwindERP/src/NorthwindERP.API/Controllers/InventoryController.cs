@@ -73,4 +73,15 @@ public class InventoryController : ControllerBase
         var entries = await _inventory.GetKardexAsync(filter, ct);
         return Ok(entries.Select(e => e.ToDto()));
     }
+
+    /// <summary>
+    /// Lista los almacenes con el nombre de su responsable (join de Warehouses con
+    /// Employees por ManagerEmployeeID). Es el warehouseId que pide el formulario de pedido.
+    /// </summary>
+    [HttpGet("warehouses")]
+    public async Task<ActionResult<IEnumerable<WarehouseDto>>> GetWarehouses(CancellationToken ct)
+    {
+        var warehouses = await _inventory.GetWarehousesAsync(ct);
+        return Ok(warehouses.Select(w => w.ToDto()));
+    }
 }
