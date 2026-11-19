@@ -91,3 +91,7 @@ GET {{host}}/api/employees
 ### Transportistas (3)
 GET {{host}}/api/shippers
 Authorization: Bearer {{token}}
+
+### Proveedores (29)
+GET {{host}}/api/suppliers
+Authorization: Bearer {{token}}
