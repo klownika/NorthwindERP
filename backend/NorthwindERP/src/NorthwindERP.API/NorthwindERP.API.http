@@ -138,3 +138,24 @@ Authorization: Bearer {{token}}
 ### Producto inexistente -> 404
 GET {{host}}/api/products/9999
 Authorization: Bearer {{token}}
+
+### Registrar un producto -> 201 (queda con stock 0 en los 3 almacenes)
+POST {{host}}/api/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "productName": "Café de Chanchamayo", "categoryId": 1, "supplierId": 1, "unit": "12 bolsas x 500 g", "price": 32.50 }
+
+### Categoría inexistente -> 400
+POST {{host}}/api/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "productName": "Prueba", "categoryId": 999, "price": 10 }
+
+### Sin precio -> 400
+POST {{host}}/api/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "productName": "Prueba" }

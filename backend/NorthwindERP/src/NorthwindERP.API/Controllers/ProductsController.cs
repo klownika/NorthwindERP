@@ -43,6 +43,20 @@ public class ProductsController : ControllerBase
     public async Task<ActionResult<ProductDto>> GetById(int id, CancellationToken ct)
         => Ok((await _products.GetByIdAsync(id, ct)).ToDto());
 
+    /// <summary>
+    /// Registra un producto. En la misma transacción le crea su fila en InventoryStock
+    /// con cantidad 0 en cada almacén, para que ya se pueda vender cuando entre stock.
+    /// Si la categoría o el proveedor no existen responde 400.
+    /// </summary>
+    [HttpPost]
+    [ProducesResponseType(typeof(ProductDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ProductDto>> Create([FromBody] CreateProductRequest request, CancellationToken ct)
+    {
+        var product = await _products.CreateAsync(request.ToModel(), ct);
+        return CreatedAtAction(nameof(GetById), new { id = product.ProductId }, product.ToDto());
+    }
+
     /// <summary>Lista las categorías; son los filtros (pills) que salen arriba del catálogo.</summary>
     // La "/" del inicio hace que la ruta no herede el api/products del controller
     [HttpGet("/api/categories")]

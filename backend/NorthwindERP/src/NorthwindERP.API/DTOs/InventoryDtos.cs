@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace NorthwindERP.API.DTOs;
 
 // Mismos nombres que frontend/src/app/core/models/api.models.ts
@@ -47,3 +49,22 @@ public record ProductDto(
     decimal Price);
 
 public record CategoryDto(int CategoryId, string CategoryName, string? Description);
+
+// Los StringLength copian el tamaño de las columnas de products
+
+/// <summary>Cuerpo de POST /api/products.</summary>
+public class CreateProductRequest
+{
+    [Required, StringLength(50)]
+    public string ProductName { get; set; } = string.Empty;
+
+    [Range(1, int.MaxValue)] public int? CategoryId { get; set; }
+    [Range(1, int.MaxValue)] public int? SupplierId { get; set; }
+
+    /// <summary>Presentación, por ejemplo "10 boxes x 20 bags".</summary>
+    [StringLength(25)] public string? Unit { get; set; }
+
+    // Nullable + Required para que un body sin precio dé 400 en vez de guardar 0
+    [Required, Range(typeof(decimal), "0", "100000")]
+    public decimal? Price { get; set; }
+}
