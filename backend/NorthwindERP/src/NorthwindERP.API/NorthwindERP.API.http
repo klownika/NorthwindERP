@@ -130,3 +130,11 @@ Authorization: Bearer {{token}}
 ### Categorías (8)
 GET {{host}}/api/categories
 Authorization: Bearer {{token}}
+
+### Un producto
+GET {{host}}/api/products/11
+Authorization: Bearer {{token}}
+
+### Producto inexistente -> 404
+GET {{host}}/api/products/9999
+Authorization: Bearer {{token}}

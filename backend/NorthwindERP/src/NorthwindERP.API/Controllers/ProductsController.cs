@@ -13,8 +13,13 @@ namespace NorthwindERP.API.Controllers;
 public class ProductsController : ControllerBase
 {
     private readonly IInventoryService _inventory;
+    private readonly IProductService _products;
 
-    public ProductsController(IInventoryService inventory) => _inventory = inventory;
+    public ProductsController(IInventoryService inventory, IProductService products)
+    {
+        _inventory = inventory;
+        _products = products;
+    }
 
     /// <summary>
     /// Lista los productos con su categoría, proveedor y precio. Products.Price es el
@@ -30,6 +35,13 @@ public class ProductsController : ControllerBase
         var products = await _inventory.GetProductsAsync(search, categoryId, ct);
         return Ok(products.Select(p => p.ToDto()));
     }
+
+    /// <summary>Un producto con su categoría y proveedor. 404 si no existe.</summary>
+    [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ProductDto>> GetById(int id, CancellationToken ct)
+        => Ok((await _products.GetByIdAsync(id, ct)).ToDto());
 
     /// <summary>Lista las categorías; son los filtros (pills) que salen arriba del catálogo.</summary>
     // La "/" del inicio hace que la ruta no herede el api/products del controller
