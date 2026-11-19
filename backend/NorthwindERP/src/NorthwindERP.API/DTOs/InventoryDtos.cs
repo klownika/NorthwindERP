@@ -68,16 +68,3 @@ public class CreateProductRequest
     [Required, Range(typeof(decimal), "0", "100000")]
     public decimal? Price { get; set; }
 }
-
-/// <summary>Cuerpo de PUT /api/products/{id}. Todo es opcional; solo cambia lo que se manda.</summary>
-public class UpdateProductRequest
-{
-    [StringLength(50)] public string? ProductName { get; set; }
-    [Range(1, int.MaxValue)] public int? CategoryId { get; set; }
-    [Range(1, int.MaxValue)] public int? SupplierId { get; set; }
-    [StringLength(25)] public string? Unit { get; set; }
-
-    /// <summary>Solo un Admin puede cambiarlo.</summary>
-    [Range(typeof(decimal), "0", "100000")]
-    public decimal? Price { get; set; }
-}

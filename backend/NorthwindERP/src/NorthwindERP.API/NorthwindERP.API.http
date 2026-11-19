@@ -153,27 +153,6 @@ Content-Type: application/json
 
 { "productName": "Prueba" }
 
-### Editar nombre y unidad (cambia el id por el producto que creaste)
-PUT {{host}}/api/products/78
-Authorization: Bearer {{token}}
-Content-Type: application/json
-
-{ "productName": "Café de Chanchamayo orgánico", "unit": "12 bolsas x 1 kg" }
-
-### Cambiar precio: con Admin -> 200, con un usuario Employee -> 403
-PUT {{host}}/api/products/78
-Authorization: Bearer {{token}}
-Content-Type: application/json
-
-{ "price": 35.00 }
-
-### Body vacío -> 400
-PUT {{host}}/api/products/78
-Authorization: Bearer {{token}}
-Content-Type: application/json
-
-{}
-
 ### Stock de todos los almacenes (77 productos x 3 almacenes)
 GET {{host}}/api/inventory/stock
 Authorization: Bearer {{token}}

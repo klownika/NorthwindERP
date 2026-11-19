@@ -85,49 +85,10 @@ public sealed class ProductService : IProductService
         return await GetByIdAsync(productId, ct);
     }
 
-    public async Task<Product> UpdateAsync(int productId, ProductUpdate update, CancellationToken ct)
-    {
-        var nothingToUpdate =
-            string.IsNullOrWhiteSpace(update.ProductName) &&
-            update.CategoryId is null &&
-            update.SupplierId is null &&
-            string.IsNullOrWhiteSpace(update.Unit) &&
-            update.Price is null;
-
-        if (nothingToUpdate)
-            throw new BusinessRuleException("Envía al menos un campo para actualizar.");
-
-        await using var conn = await _ds.OpenConnectionAsync(ct);
-        await EnsureCategoryAndSupplierAsync(conn, null, update.CategoryId, update.SupplierId, ct);
-
-        // COALESCE deja el valor actual cuando el parámetro llega null
-        await using var cmd = new NpgsqlCommand(
-            """
-            UPDATE Products
-            SET ProductName = COALESCE(@name, ProductName),
-                CategoryID  = COALESCE(@category, CategoryID),
-                SupplierID  = COALESCE(@supplier, SupplierID),
-                Unit        = COALESCE(@unit, Unit),
-                Price       = COALESCE(@price, Price)
-            WHERE ProductID = @id
-            """, conn);
-        cmd.Parameters.Add(P("name", Clean(update.ProductName), NpgsqlDbType.Varchar));
-        cmd.Parameters.Add(P("category", update.CategoryId, NpgsqlDbType.Integer));
-        cmd.Parameters.Add(P("supplier", update.SupplierId, NpgsqlDbType.Integer));
-        cmd.Parameters.Add(P("unit", Clean(update.Unit), NpgsqlDbType.Varchar));
-        cmd.Parameters.Add(P("price", update.Price, NpgsqlDbType.Numeric));
-        cmd.Parameters.Add(P("id", productId, NpgsqlDbType.Integer));
-
-        if (await cmd.ExecuteNonQueryAsync(ct) == 0)
-            throw new NotFoundException($"No existe el producto {productId}.");
-
-        return await GetByIdAsync(productId, ct);
-    }
-
-    // Se revisa antes del INSERT/UPDATE para devolver un 400 con un mensaje claro,
+    // Se revisa antes del INSERT para devolver un 400 con un mensaje claro,
     // en vez del 409 genérico que daría la FK
     private static async Task EnsureCategoryAndSupplierAsync(
-        NpgsqlConnection conn, NpgsqlTransaction? tx, int? categoryId, int? supplierId, CancellationToken ct)
+        NpgsqlConnection conn, NpgsqlTransaction tx, int? categoryId, int? supplierId, CancellationToken ct)
     {
         if (categoryId is not null && !await ExistsAsync(conn, tx, "SELECT 1 FROM Categories WHERE CategoryID = @id", categoryId.Value, ct))
             throw new BusinessRuleException($"No existe la categoría {categoryId}.");
@@ -136,12 +97,10 @@ public sealed class ProductService : IProductService
             throw new BusinessRuleException($"No existe el proveedor {supplierId}.");
     }
 
-    private static async Task<bool> ExistsAsync(NpgsqlConnection conn, NpgsqlTransaction? tx, string sql, int id, CancellationToken ct)
+    private static async Task<bool> ExistsAsync(NpgsqlConnection conn, NpgsqlTransaction tx, string sql, int id, CancellationToken ct)
     {
         await using var cmd = new NpgsqlCommand(sql, conn, tx);
         cmd.Parameters.Add(P("id", id, NpgsqlDbType.Integer));
         return await cmd.ExecuteScalarAsync(ct) is not null;
     }
-
-    private static string? Clean(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 }

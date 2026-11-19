@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using NorthwindERP.API.DTOs;
 using NorthwindERP.API.Mappings;
 using NorthwindERP.Core.Interfaces;
-using NorthwindERP.Core.Models;
 
 namespace NorthwindERP.API.Controllers;
 
@@ -56,32 +55,6 @@ public class ProductsController : ControllerBase
     {
         var product = await _products.CreateAsync(request.ToModel(), ct);
         return CreatedAtAction(nameof(GetById), new { id = product.ProductId }, product.ToDto());
-    }
-
-    /// <summary>
-    /// Edita nombre, categoría, proveedor, unidad o precio. El stock no se toca aquí,
-    /// ese solo cambia con los pedidos (regla R8).
-    /// </summary>
-    /// <remarks>
-    /// El precio solo lo cambia un Admin: las vistas calculan los totales con el precio
-    /// actual de Products (no se guarda el precio de cada venta), así que cambiarlo
-    /// también cambia los totales de los pedidos viejos y de los reportes.
-    /// </remarks>
-    [HttpPut("{id:int}")]
-    [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ProductDto>> Update(int id, [FromBody] UpdateProductRequest request, CancellationToken ct)
-    {
-        if (request.Price is not null && !User.IsInRole(Roles.Admin))
-            return Problem(
-                title: "Forbidden",
-                detail: "Only an Admin can change the price.",
-                statusCode: StatusCodes.Status403Forbidden);
-
-        var product = await _products.UpdateAsync(id, request.ToModel(), ct);
-        return Ok(product.ToDto());
     }
 
     /// <summary>Lista las categorías; son los filtros (pills) que salen arriba del catálogo.</summary>

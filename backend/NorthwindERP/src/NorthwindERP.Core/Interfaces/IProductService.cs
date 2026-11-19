@@ -11,5 +11,4 @@ public interface IProductService
 {
     Task<Product> GetByIdAsync(int productId, CancellationToken ct);
     Task<Product> CreateAsync(NewProduct product, CancellationToken ct);
-    Task<Product> UpdateAsync(int productId, ProductUpdate update, CancellationToken ct);
 }
