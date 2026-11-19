@@ -180,3 +180,15 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {}
+
+### Stock de todos los almacenes (77 productos x 3 almacenes)
+GET {{host}}/api/inventory/stock
+Authorization: Bearer {{token}}
+
+### Stock de un producto en un almacén (anota la cantidad antes de crear un pedido)
+GET {{host}}/api/inventory/stock?warehouseId=1&productId=11
+Authorization: Bearer {{token}}
+
+### Solo lo que hay que reponer
+GET {{host}}/api/inventory/stock?lowStockOnly=true
+Authorization: Bearer {{token}}
