@@ -4,6 +4,10 @@ using NorthwindERP.Core.Exceptions;
 
 namespace NorthwindERP.API.Middlewares;
 
+// Middleware = un filtro por el que pasa TODA petición.
+// Este envuelve todo en un try/catch: si un servicio lanza una excepción,
+// aquí se convierte en una respuesta JSON con el código HTTP correcto.
+// Así los controladores no necesitan try/catch.
 public class ErrorHandlingMiddleware
 {
     private readonly RequestDelegate _next;
@@ -21,68 +25,155 @@ public class ErrorHandlingMiddleware
     {
         try
         {
+            // Dejar pasar la petición al siguiente paso (controlador, servicio...)
             await _next(context);
         }
-        catch (Exception ex) when (!context.Response.HasStarted)
+        catch (Exception ex)
         {
+            // Si ya se empezó a enviar la respuesta, no se puede cambiar: relanzar
+            if (context.Response.HasStarted)
+            {
+                throw;
+            }
+
             await HandleExceptionAsync(context, ex);
         }
     }
 
     private async Task HandleExceptionAsync(HttpContext context, Exception ex)
     {
-        var (status, title, detail, code) = Map(ex);
+        // 1. Traducir la excepción a un ProblemDetails (formato estándar de error)
+        ProblemDetails problem = BuildProblem(ex);
+        problem.Instance = context.Request.Path;
 
+        int status = problem.Status ?? StatusCodes.Status500InternalServerError;
+
+        // 2. Registrar en la consola: los 500 son errores nuestros, el resto son peticiones rechazadas
         if (status >= 500)
-            _logger.LogError(ex, "Error no controlado en {Path}", context.Request.Path);
-        else
-            _logger.LogWarning("Petición rechazada ({Status}) en {Path}: {Detail}", status, context.Request.Path, detail);
-
-        var problem = new ProblemDetails
         {
-            Status = status,
-            Title = title,
-            Detail = detail,
-            Instance = context.Request.Path
-        };
-        if (code is not null) problem.Extensions["code"] = code;
+            _logger.LogError(ex, "Error no controlado en {Path}", context.Request.Path);
+        }
+        else
+        {
+            _logger.LogWarning("Petición rechazada ({Status}) en {Path}: {Detail}", status, context.Request.Path, problem.Detail);
+        }
 
+        // 3. Escribir la respuesta JSON
         context.Response.StatusCode = status;
         await context.Response.WriteAsJsonAsync(problem, options: null, contentType: "application/problem+json");
     }
 
-    private (int Status, string Title, string? Detail, string? Code) Map(Exception ex)
+    private ProblemDetails BuildProblem(Exception ex)
     {
-        switch (ex)
+        ProblemDetails problem = new ProblemDetails();
+
+        // --- Nuestras excepciones (las lanzan los servicios) ---
+        if (ex is NotFoundException)
         {
-            case NotFoundException:
-                return (StatusCodes.Status404NotFound, "Not found", ex.Message, null);
-            case BusinessRuleException:
-                return (StatusCodes.Status400BadRequest, "Business rule violated", ex.Message, null);
-            case UnauthorizedAccessException:
-                return (StatusCodes.Status401Unauthorized, "Unauthorized", ex.Message, null);
+            problem.Status = StatusCodes.Status404NotFound;
+            problem.Title = "Not found";
+            problem.Detail = ex.Message;
+            return problem;
         }
 
-        var pg = ex as PostgresException ?? ex.InnerException as PostgresException;
-        if (pg is not null)
+        if (ex is BusinessRuleException)
         {
-            return pg.SqlState switch
-            {
-                // Los lanzan nuestros procedimientos, así que su mensaje es seguro de mostrar
-                "NW400" => (400, "Invalid request", pg.MessageText, pg.SqlState),
-                "NW404" => (404, "Resource not found", pg.MessageText, pg.SqlState),
-                "NW409" => (409, "Insufficient stock", pg.MessageText, pg.SqlState),
-
-                PostgresErrorCodes.ForeignKeyViolation => (409, "Related record conflict", null, pg.SqlState),
-                PostgresErrorCodes.UniqueViolation => (409, "Duplicate value", null, pg.SqlState),
-                PostgresErrorCodes.NotNullViolation => (400, "Missing required value", null, pg.SqlState),
-                PostgresErrorCodes.CheckViolation => (400, "Value out of range", null, pg.SqlState),
-                PostgresErrorCodes.StringDataRightTruncation => (400, "Value too long", null, pg.SqlState),
-                _ => (500, "Database error", _env.IsDevelopment() ? pg.MessageText : null, pg.SqlState)
-            };
+            problem.Status = StatusCodes.Status400BadRequest;
+            problem.Title = "Business rule violated";
+            problem.Detail = ex.Message;
+            return problem;
         }
 
-        return (StatusCodes.Status500InternalServerError, "Internal server error",
-            _env.IsDevelopment() ? ex.Message : null, null);
+        if (ex is UnauthorizedAccessException)
+        {
+            problem.Status = StatusCodes.Status401Unauthorized;
+            problem.Title = "Unauthorized";
+            problem.Detail = ex.Message;
+            return problem;
+        }
+
+        // --- Errores de PostgreSQL (a veces vienen dentro de otra excepción) ---
+        PostgresException? pg = ex as PostgresException;
+        if (pg == null)
+        {
+            pg = ex.InnerException as PostgresException;
+        }
+
+        if (pg != null)
+        {
+            problem.Extensions["code"] = pg.SqlState;
+            FillPostgresProblem(problem, pg);
+            return problem;
+        }
+
+        // --- Cualquier otra cosa: error 500 (el detalle solo se muestra en Development) ---
+        problem.Status = StatusCodes.Status500InternalServerError;
+        problem.Title = "Internal server error";
+        if (_env.IsDevelopment())
+        {
+            problem.Detail = ex.Message;
+        }
+
+        return problem;
+    }
+
+    private void FillPostgresProblem(ProblemDetails problem, PostgresException pg)
+    {
+        switch (pg.SqlState)
+        {
+            // Códigos propios que lanzan nuestros procedimientos: su mensaje es seguro de mostrar
+            case "NW400":
+                problem.Status = 400;
+                problem.Title = "Invalid request";
+                problem.Detail = pg.MessageText;
+                break;
+
+            case "NW404":
+                problem.Status = 404;
+                problem.Title = "Resource not found";
+                problem.Detail = pg.MessageText;
+                break;
+
+            case "NW409":
+                problem.Status = 409;
+                problem.Title = "Insufficient stock";
+                problem.Detail = pg.MessageText;
+                break;
+
+            // Errores estándar de PostgreSQL
+            case PostgresErrorCodes.ForeignKeyViolation:
+                problem.Status = 409;
+                problem.Title = "Related record conflict";
+                break;
+
+            case PostgresErrorCodes.UniqueViolation:
+                problem.Status = 409;
+                problem.Title = "Duplicate value";
+                break;
+
+            case PostgresErrorCodes.NotNullViolation:
+                problem.Status = 400;
+                problem.Title = "Missing required value";
+                break;
+
+            case PostgresErrorCodes.CheckViolation:
+                problem.Status = 400;
+                problem.Title = "Value out of range";
+                break;
+
+            case PostgresErrorCodes.StringDataRightTruncation:
+                problem.Status = 400;
+                problem.Title = "Value too long";
+                break;
+
+            default:
+                problem.Status = 500;
+                problem.Title = "Database error";
+                if (_env.IsDevelopment())
+                {
+                    problem.Detail = pg.MessageText;
+                }
+                break;
+        }
     }
 }
