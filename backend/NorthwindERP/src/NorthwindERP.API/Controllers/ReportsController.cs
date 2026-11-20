@@ -1,8 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NorthwindERP.API.DTOs;
-using NorthwindERP.API.Mappings;
+using NorthwindERP.Core.DTOs;
 using NorthwindERP.Core.Interfaces;
 
 namespace NorthwindERP.API.Controllers;
@@ -13,64 +12,60 @@ namespace NorthwindERP.API.Controllers;
 [Authorize]
 public class ReportsController : ControllerBase
 {
-    private readonly IReportService _reports;
+    private readonly IReportService _reportService;
 
-    public ReportsController(IReportService reports) => _reports = reports;
+    public ReportsController(IReportService reportService)
+    {
+        _reportService = reportService;
+    }
 
     /// <summary>
-    /// Vista 2 (por cliente): total vendido a cada cliente, leído de vw_sales_by_customer
-    /// y ordenado de mayor a menor. Los clientes que nunca compraron no aparecen,
-    /// porque la vista usa JOIN con Orders (regla R9).
+    /// Vista 2 (por cliente): total vendido a cada cliente, de mayor a menor.
+    /// Los clientes que nunca compraron no aparecen (regla R9).
     /// </summary>
     [HttpGet("sales-by-customer")]
-    public async Task<ActionResult<IEnumerable<CustomerSalesDto>>> SalesByCustomer(CancellationToken ct)
+    public async Task<ActionResult<List<CustomerSalesDto>>> SalesByCustomer(CancellationToken ct)
     {
-        var rows = await _reports.GetSalesByCustomerAsync(ct);
-        return Ok(rows.Select(r => r.ToDto()));
+        List<CustomerSalesDto> rows = await _reportService.GetSalesByCustomerAsync(ct);
+        return Ok(rows);
     }
 
-    /// <summary>
-    /// Vista 2 (por región): total vendido por país, con cuántos clientes compraron y
-    /// cuántos pedidos hubo. Sale de vw_sales_by_country.
-    /// </summary>
+    /// <summary>Vista 2 (por región): total vendido por país, con clientes y pedidos.</summary>
     [HttpGet("sales-by-country")]
-    public async Task<ActionResult<IEnumerable<CountrySalesDto>>> SalesByCountry(CancellationToken ct)
+    public async Task<ActionResult<List<CountrySalesDto>>> SalesByCountry(CancellationToken ct)
     {
-        var rows = await _reports.GetSalesByCountryAsync(ct);
-        return Ok(rows.Select(r => r.ToDto()));
+        List<CountrySalesDto> rows = await _reportService.GetSalesByCountryAsync(ct);
+        return Ok(rows);
     }
 
     /// <summary>
-    /// Ventas por cliente con totales por año: une Customers, Orders, OrderDetails y
-    /// Products y agrupa por cliente y año (COUNT de pedidos, SUM del total y AVG por línea).
+    /// Ventas por cliente con totales por año (JOIN + GROUP BY + COUNT/SUM/AVG).
     /// Sin filtros devuelve todos los años.
     /// </summary>
     /// <param name="year">Solo ese año (1990-2100).</param>
     /// <param name="customerId">Solo ese cliente.</param>
     /// <param name="ct">Token de cancelación.</param>
     [HttpGet("sales-by-customer-year")]
-    [ProducesResponseType(typeof(IEnumerable<CustomerYearSalesDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<IEnumerable<CustomerYearSalesDto>>> SalesByCustomerYear(
-        [FromQuery, Range(1990, 2100)] int? year, [FromQuery] int? customerId, CancellationToken ct)
+    public async Task<ActionResult<List<CustomerYearSalesDto>>> SalesByCustomerYear(
+        [FromQuery, Range(1990, 2100)] int? year,
+        [FromQuery] int? customerId,
+        CancellationToken ct)
     {
-        var rows = await _reports.GetSalesByCustomerYearAsync(year, customerId, ct);
-        return Ok(rows.Select(r => r.ToDto()));
+        List<CustomerYearSalesDto> rows = await _reportService.GetSalesByCustomerYearAsync(year, customerId, ct);
+        return Ok(rows);
     }
 
     /// <summary>
-    /// Ventas por empleado con totales por año: cuántos pedidos registró cada vendedor,
-    /// cuánto vendió y su ticket promedio. Mismo JOIN que el de clientes pero desde Employees.
+    /// Ventas por empleado con totales por año: pedidos, total vendido y ticket promedio.
     /// </summary>
     /// <param name="year">Solo ese año (1990-2100).</param>
     /// <param name="ct">Token de cancelación.</param>
     [HttpGet("sales-by-employee-year")]
-    [ProducesResponseType(typeof(IEnumerable<EmployeeYearSalesDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<IEnumerable<EmployeeYearSalesDto>>> SalesByEmployeeYear(
-        [FromQuery, Range(1990, 2100)] int? year, CancellationToken ct)
+    public async Task<ActionResult<List<EmployeeYearSalesDto>>> SalesByEmployeeYear(
+        [FromQuery, Range(1990, 2100)] int? year,
+        CancellationToken ct)
     {
-        var rows = await _reports.GetSalesByEmployeeYearAsync(year, ct);
-        return Ok(rows.Select(r => r.ToDto()));
+        List<EmployeeYearSalesDto> rows = await _reportService.GetSalesByEmployeeYearAsync(year, ct);
+        return Ok(rows);
     }
 }
