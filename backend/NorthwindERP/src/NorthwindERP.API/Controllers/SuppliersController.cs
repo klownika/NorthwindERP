@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NorthwindERP.API.DTOs;
-using NorthwindERP.API.Mappings;
+using NorthwindERP.Core.DTOs;
 using NorthwindERP.Core.Interfaces;
 
 namespace NorthwindERP.API.Controllers;
@@ -12,18 +11,18 @@ namespace NorthwindERP.API.Controllers;
 [Authorize]
 public class SuppliersController : ControllerBase
 {
-    private readonly ILogisticsService _logistics;
+    private readonly ILogisticsService _logisticsService;
 
-    public SuppliersController(ILogisticsService logistics) => _logistics = logistics;
-
-    /// <summary>
-    /// Lista los proveedores ordenados por nombre. Lo usa la pantalla de proveedores
-    /// de inventario y el combo de proveedor al crear o editar un producto.
-    /// </summary>
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<SupplierDto>>> GetAll(CancellationToken ct)
+    public SuppliersController(ILogisticsService logisticsService)
     {
-        var suppliers = await _logistics.GetSuppliersAsync(ct);
-        return Ok(suppliers.Select(s => s.ToDto()));
+        _logisticsService = logisticsService;
+    }
+
+    /// <summary>Lista los proveedores ordenados por nombre.</summary>
+    [HttpGet]
+    public async Task<ActionResult<List<SupplierDto>>> GetAll(CancellationToken ct)
+    {
+        List<SupplierDto> suppliers = await _logisticsService.GetSuppliersAsync(ct);
+        return Ok(suppliers);
     }
 }

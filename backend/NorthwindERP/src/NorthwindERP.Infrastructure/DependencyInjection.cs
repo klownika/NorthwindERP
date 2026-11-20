@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using NorthwindERP.Core.Interfaces;
 using NorthwindERP.Infrastructure.Data;
-using NorthwindERP.Infrastructure.Repositories;
 using NorthwindERP.Infrastructure.Security;
 using NorthwindERP.Infrastructure.Services;
 
@@ -31,7 +30,6 @@ public static class DependencyInjection
         services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
         services.AddSingleton<ITokenService, JwtTokenService>();
 
-        services.AddScoped<ILogisticsRepository, LogisticsRepository>();
 
         services.AddScoped<IInventoryService, InventoryService>();
         services.AddScoped<IProductService, ProductService>();

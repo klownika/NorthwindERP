@@ -5,7 +5,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NorthwindERP.Core.Interfaces;
 using NorthwindERP.Core.Constants;
-using NorthwindERP.Core.Services;
 using NorthwindERP.Infrastructure.Services;
 using NorthwindERP.Infrastructure.Security;
 
