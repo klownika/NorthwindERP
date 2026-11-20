@@ -1,5 +1,7 @@
 namespace NorthwindERP.Core.Entities;
 
+// Entidad = una fila de la tabla "customers".
+// EF Core pasa los nombres a minúsculas: CustomerName -> columna customername.
 public class Customer
 {
     public int CustomerId { get; set; }

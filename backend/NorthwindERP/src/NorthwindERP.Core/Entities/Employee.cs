@@ -1,5 +1,6 @@
 namespace NorthwindERP.Core.Entities;
 
+// Una fila de la tabla "employees".
 public class Employee
 {
     public int EmployeeId { get; set; }

@@ -1,11 +1,6 @@
 namespace NorthwindERP.Core.Entities;
 
-public class Role
-{
-    public int RoleId { get; set; }
-    public string RoleName { get; set; } = string.Empty;
-}
-
+// Una fila de la tabla "useraccounts": las cuentas para iniciar sesión.
 public class UserAccount
 {
     public int UserAccountId { get; set; }
@@ -14,9 +9,13 @@ public class UserAccount
     public string PasswordHash { get; set; } = string.Empty;
     public int RoleId { get; set; }
     public bool IsActive { get; set; } = true;
+
+    // true = el usuario debe cambiar su contraseña al entrar (columna changepassword)
     public bool ChangePassword { get; set; } = true;
+
     public DateTime CreatedAt { get; set; }
 
+    // Propiedades de navegación: EF las llena cuando usas .Include(...)
     public Role? Role { get; set; }
     public Employee? Employee { get; set; }
 }
