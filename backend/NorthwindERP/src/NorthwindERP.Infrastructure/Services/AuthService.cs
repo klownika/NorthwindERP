@@ -61,7 +61,7 @@ public class AuthService : IAuthService
         response.Username = user.Username;
         response.Role = user.Role?.RoleName;
         response.EmployeeId = user.EmployeeId;
-        response.ChangePassword = user.ChangePassword;
+        response.MustChangePassword = user.MustChangePassword;
 
         return response;
     }
@@ -89,7 +89,7 @@ public class AuthService : IAuthService
 
         // 3. Guardar el nuevo hash y apagar ChangePassword (EF genera el UPDATE)
         user.PasswordHash = _hasher.Hash(newPassword);
-        user.ChangePassword = false;
+        user.MustChangePassword = false;
 
         await _db.SaveChangesAsync(ct);
     }

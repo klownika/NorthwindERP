@@ -11,7 +11,7 @@ public class UserAccount
     public bool IsActive { get; set; } = true;
 
     // true = el usuario debe cambiar su contraseña al entrar (columna changepassword)
-    public bool ChangePassword { get; set; } = true;
+    public bool MustChangePassword { get; set; } = true;
 
     public DateTime CreatedAt { get; set; }
 

@@ -60,7 +60,7 @@ public static class AdminSeeder
         admin.PasswordHash = hasher.Hash(password);
         admin.RoleId = adminRole.RoleId;
         admin.IsActive = true;
-        admin.ChangePassword = true;
+        admin.MustChangePassword = true;
         admin.CreatedAt = DateTime.Now;
 
         db.UserAccounts.Add(admin);

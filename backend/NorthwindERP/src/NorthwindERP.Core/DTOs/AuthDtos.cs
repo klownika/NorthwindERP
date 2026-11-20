@@ -25,7 +25,7 @@ public class LoginResponse
     public string Username { get; set; } = string.Empty;
     public string? Role { get; set; }
     public int EmployeeId { get; set; }
-    public bool ChangePassword { get; set; }
+    public bool MustChangePassword { get; set; }
 }
 
 // SALE de GET /api/auth/me

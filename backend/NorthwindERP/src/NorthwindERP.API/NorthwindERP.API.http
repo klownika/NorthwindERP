@@ -1,11 +1,11 @@
 @host = http://localhost:5080
-@token = PEGA_AQUI_EL_TOKEN
+@token = CODIGO_TOKEN
 
 ### Login: copia el token de la respuesta en @token
 POST {{host}}/api/auth/login
 Content-Type: application/json
 
-{ "username": "admin", "password": "TU_PASSWORD" }
+{ "username": "admin", "password": "PASSWORD" }
 
 ############################ CLIENTES ############################
 
@@ -98,9 +98,6 @@ Authorization: Bearer {{token}}
 ### Empleados (9 en Northwind)
 GET {{host}}/api/employees
 Authorization: Bearer {{token}}
-
-### Sin token -> 401
-GET {{host}}/api/employees
 
 ### Transportistas (3)
 GET {{host}}/api/shippers
