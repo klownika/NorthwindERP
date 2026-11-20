@@ -34,7 +34,7 @@ app.MapGet("/api/health", async (NorthwindDbContext db, CancellationToken ct) =>
     .AllowAnonymous()
     .WithTags("Health");
 
-await app.Services.SeedAdminAsync(app.Configuration, app.Logger);
+await AdminSeeder.SeedAsync(app.Services, app.Configuration, app.Logger);
 
 app.Run();
 

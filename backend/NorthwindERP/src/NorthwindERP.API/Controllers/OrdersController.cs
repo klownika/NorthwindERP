@@ -2,7 +2,8 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NorthwindERP.API.DTOs;
-using NorthwindERP.API.Extensions;
+using NorthwindERP.API.Helpers;
+using NorthwindERP.Core.Constants;
 using NorthwindERP.API.Mappings;
 using NorthwindERP.Core.Interfaces;
 using NorthwindERP.Core.Models;
@@ -35,7 +36,7 @@ public class OrdersController : ControllerBase
         var command = new CreateOrderCommand(
             CustomerId: request.CustomerId,
             NewCustomer: request.NewCustomer?.ToEntity(),
-            EmployeeId: User.GetEmployeeId(),
+            EmployeeId: UserClaims.GetEmployeeId(User),
             WarehouseId: request.WarehouseId,
             ShipperId: request.ShipperId,
             Items: request.Items.Select(i => new OrderLineItem(i.ProductId, i.Quantity)).ToList());
@@ -88,13 +89,13 @@ public class OrdersController : ControllerBase
     /// registra un INBOUND en el Kardex y borra los detalles por cascada.
     /// </summary>
     [HttpDelete("{id:int}")]
-    [Authorize(Roles = Roles.Admin)]
+    [Authorize(Roles = RoleNames.Admin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
-        await _orders.DeleteAsync(id, User.GetEmployeeId(), ct);
+        await _orders.DeleteAsync(id, UserClaims.GetEmployeeId(User), ct);
         return NoContent();
     }
 }

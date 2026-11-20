@@ -1,5 +1,6 @@
 namespace NorthwindERP.Infrastructure.Security;
 
+// Se llena con la sección "Jwt" de appsettings.json (y la Key desde user-secrets)
 public class JwtSettings
 {
     public const string SectionName = "Jwt";
