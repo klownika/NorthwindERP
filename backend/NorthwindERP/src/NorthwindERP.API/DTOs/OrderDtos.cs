@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
+using NorthwindERP.Core.DTOs;
+
 namespace NorthwindERP.API.DTOs;
 
 /// <summary>Línea del pedido. Sin precio: se toma de Products.Price.</summary>

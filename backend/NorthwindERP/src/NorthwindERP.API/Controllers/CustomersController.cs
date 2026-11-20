@@ -1,49 +1,52 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NorthwindERP.API.DTOs;
-using NorthwindERP.API.Mappings;
+using NorthwindERP.Core.DTOs;
 using NorthwindERP.Core.Interfaces;
-using NorthwindERP.Core.Models;
 
 namespace NorthwindERP.API.Controllers;
 
 /// <summary>Clientes</summary>
 [ApiController]
 [Route("api/customers")]
-[Authorize]
+[Authorize] // todas las rutas de este controlador piden token (si no, 401)
 public class CustomersController : ControllerBase
 {
-    private readonly ICustomerService _customers;
+    private readonly ICustomerService _customerService;
 
-    public CustomersController(ICustomerService customers) => _customers = customers;
+    public CustomersController(ICustomerService customerService)
+    {
+        _customerService = customerService;
+    }
 
     /// <summary>Lista todos los clientes.</summary>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<CustomerDto>>> GetAll(CancellationToken ct)
+    public async Task<ActionResult<List<CustomerDto>>> GetAll(CancellationToken ct)
     {
-        var customers = await _customers.GetAllAsync(ct);
-        return Ok(customers.Select(c => c.ToDto()));
+        List<CustomerDto> customers = await _customerService.GetAllAsync(ct);
+        return Ok(customers);
     }
 
-    /// <summary>Obtiene un cliente por id.</summary>
+    /// <summary>Obtiene un cliente por id (404 si no existe).</summary>
     [HttpGet("{id:int}")]
-    [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CustomerDto>> GetById(int id, CancellationToken ct)
-        => Ok((await _customers.GetByIdAsync(id, ct)).ToDto());
+    {
+        CustomerDto customer = await _customerService.GetByIdAsync(id, ct);
+        return Ok(customer);
+    }
 
     /// <summary>
-    /// Registra un cliente sin pedido (INSERT en customers con EF Core). Antes la única
-    /// forma de crear clientes era POST /api/orders/with-customer junto con un pedido.
+    /// Registra un cliente sin pedido.
     /// Responde 201 con el header Location apuntando a GET /api/customers/{id}.
     /// </summary>
     [HttpPost]
     [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CustomerDto>> Create([FromBody] NewCustomerRequest request, CancellationToken ct)
     {
-        var customer = await _customers.CreateAsync(request.ToEntity(), ct);
-        return CreatedAtAction(nameof(GetById), new { id = customer.CustomerId }, customer.ToDto());
+        // 1. El servicio valida y guarda
+        CustomerDto created = await _customerService.CreateAsync(request, ct);
+
+        // 2. 201 Created + Location: /api/customers/{id}
+        return CreatedAtAction(nameof(GetById), new { id = created.CustomerId }, created);
     }
 
     /// <summary>
@@ -51,14 +54,9 @@ public class CustomersController : ControllerBase
     /// por eso solo se editan dirección, ciudad, código postal y país.
     /// </summary>
     [HttpPut("{id:int}")]
-    [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<CustomerDto>> UpdateContact(
-        int id, [FromBody] UpdateCustomerContactRequest request, CancellationToken ct)
+    public async Task<ActionResult<CustomerDto>> UpdateContact(int id, [FromBody] UpdateCustomerContactRequest request, CancellationToken ct)
     {
-        var update = new CustomerContactUpdate(request.Address, request.City, request.PostalCode, request.Country);
-        var customer = await _customers.UpdateContactAsync(id, update, ct);
-        return Ok(customer.ToDto());
+        CustomerDto updated = await _customerService.UpdateContactAsync(id, request, ct);
+        return Ok(updated);
     }
 }
