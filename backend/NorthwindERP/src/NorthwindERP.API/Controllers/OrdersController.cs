@@ -1,12 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NorthwindERP.API.DTOs;
 using NorthwindERP.API.Helpers;
 using NorthwindERP.Core.Constants;
-using NorthwindERP.API.Mappings;
+using NorthwindERP.Core.DTOs;
 using NorthwindERP.Core.Interfaces;
-using NorthwindERP.Core.Models;
 
 namespace NorthwindERP.API.Controllers;
 
@@ -16,34 +14,30 @@ namespace NorthwindERP.API.Controllers;
 [Authorize]
 public class OrdersController : ControllerBase
 {
-    private readonly IOrderService _orders;
+    private readonly IOrderService _orderService;
 
-    public OrdersController(IOrderService orders) => _orders = orders;
+    public OrdersController(IOrderService orderService)
+    {
+        _orderService = orderService;
+    }
 
     /// <summary>
     /// Registra un pedido completo (cliente nuevo o existente, más sus productos) en una sola transacción.
-    /// Llama a sp_register_order: valida el stock del almacén, lo descuenta y registra el OUTBOUND en el Kardex.
-    /// Si falta stock de un producto no se guarda nada, ni siquiera el cliente nuevo.
+    /// Llama a sp_register_order: valida el stock, lo descuenta y registra el OUTBOUND en el Kardex.
+    /// Si falta stock (409) no se guarda nada, ni siquiera el cliente nuevo.
     /// </summary>
     [HttpPost("with-customer")]
     [ProducesResponseType(typeof(CreateOrderResponse), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<CreateOrderResponse>> CreateWithCustomer(
-        [FromBody] CreateOrderWithCustomerRequest request, CancellationToken ct)
+    public async Task<ActionResult<CreateOrderResponse>> CreateWithCustomer([FromBody] CreateOrderWithCustomerRequest request, CancellationToken ct)
     {
-        var command = new CreateOrderCommand(
-            CustomerId: request.CustomerId,
-            NewCustomer: request.NewCustomer?.ToEntity(),
-            EmployeeId: UserClaims.GetEmployeeId(User),
-            WarehouseId: request.WarehouseId,
-            ShipperId: request.ShipperId,
-            Items: request.Items.Select(i => new OrderLineItem(i.ProductId, i.Quantity)).ToList());
+        // 1. El empleado que registra la venta sale del TOKEN, nunca del body
+        int employeeId = UserClaims.GetEmployeeId(User);
 
-        var result = await _orders.CreateWithCustomerAsync(command, ct);
+        // 2. El servicio hace todo en una transacción
+        CreateOrderResponse created = await _orderService.CreateWithCustomerAsync(request, employeeId, ct);
 
-        return CreatedAtAction(nameof(GetById), new { id = result.OrderId }, result.ToDto());
+        // 3. 201 Created + Location: /api/orders/{id}
+        return CreatedAtAction(nameof(GetById), new { id = created.OrderId }, created);
     }
 
     /// <summary>Pedidos con su total, los más recientes primero.</summary>
@@ -54,7 +48,7 @@ public class OrdersController : ControllerBase
     /// <param name="ct">Token de cancelación.</param>
     /// <param name="take">Máximo de pedidos (1-1000, por defecto 200).</param>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<OrderSummaryDto>>> GetAll(
+    public async Task<ActionResult<List<OrderSummaryDto>>> GetAll(
         [FromQuery] int? customerId,
         [FromQuery] int? employeeId,
         [FromQuery] DateTime? from,
@@ -62,40 +56,45 @@ public class OrdersController : ControllerBase
         CancellationToken ct,
         [FromQuery, Range(1, 1000)] int take = 200)
     {
-        var orders = await _orders.GetAllAsync(new OrderFilter(customerId, employeeId, from, to, take), ct);
-        return Ok(orders.Select(o => o.ToDto()));
+        List<OrderSummaryDto> orders = await _orderService.GetAllAsync(customerId, employeeId, from, to, take, ct);
+        return Ok(orders);
     }
 
     /// <summary>Un pedido con sus productos y el total por línea (vista vw_order_details_extended).</summary>
     [HttpGet("{id:int}")]
-    [ProducesResponseType(typeof(OrderDetailDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<OrderDetailDto>> GetById(int id, CancellationToken ct)
     {
-        var order = await _orders.GetByIdAsync(id, ct);
-        return order is null ? NotFound() : Ok(order.ToDto());
+        OrderDetailDto? order = await _orderService.GetByIdAsync(id, ct);
+
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(order);
     }
 
     /// <summary>Historial de pedidos de un cliente (función get_customer_order_history). Lista vacía si no tiene pedidos.</summary>
     [HttpGet("customer/{customerId:int}")]
-    public async Task<ActionResult<IEnumerable<CustomerOrderHistoryDto>>> GetCustomerHistory(int customerId, CancellationToken ct)
+    public async Task<ActionResult<List<CustomerOrderHistoryDto>>> GetCustomerHistory(int customerId, CancellationToken ct)
     {
-        var history = await _orders.GetCustomerHistoryAsync(customerId, ct);
-        return Ok(history.Select(h => h.ToDto()));
+        List<CustomerOrderHistoryDto> history = await _orderService.GetCustomerHistoryAsync(customerId, ct);
+        return Ok(history);
     }
 
     /// <summary>
-    /// Elimina un pedido (solo Admin). Llama a sp_delete_order: devuelve el stock al almacén de origen,
+    /// Elimina un pedido (solo Admin). Llama a sp_delete_order: devuelve el stock al almacén,
     /// registra un INBOUND en el Kardex y borra los detalles por cascada.
     /// </summary>
     [HttpDelete("{id:int}")]
-    [Authorize(Roles = RoleNames.Admin)]
+    [Authorize(Roles = RoleNames.Admin)] // un usuario que no es Admin recibe 403
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
-        await _orders.DeleteAsync(id, UserClaims.GetEmployeeId(User), ct);
+        int employeeId = UserClaims.GetEmployeeId(User);
+
+        await _orderService.DeleteAsync(id, employeeId, ct);
+
         return NoContent();
     }
 }

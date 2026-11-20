@@ -1,20 +1,20 @@
-using NorthwindERP.Core.Models;
+using NorthwindERP.Core.DTOs;
 
 namespace NorthwindERP.Core.Interfaces;
 
-/// <summary>Módulo de pedidos. La lógica de stock vive en la base (sp_register_order / sp_delete_order).</summary>
+// Pedidos. La lógica de stock vive en la base de datos (sp_register_order / sp_delete_order).
 public interface IOrderService
 {
-    /// <summary>Crea el cliente (si es nuevo) y llama a sp_register_order, todo en una transacción.</summary>
-    Task<CreateOrderResult> CreateWithCustomerAsync(CreateOrderCommand command, CancellationToken ct);
+    // Crea el cliente (si es nuevo) y llama a sp_register_order, todo en una transacción
+    Task<CreateOrderResponse> CreateWithCustomerAsync(CreateOrderWithCustomerRequest request, int employeeId, CancellationToken ct);
 
-    /// <summary>Devuelve null si el pedido no existe.</summary>
-    Task<OrderDetail?> GetByIdAsync(int orderId, CancellationToken ct);
+    Task<List<OrderSummaryDto>> GetAllAsync(int? customerId, int? employeeId, DateTime? from, DateTime? to, int take, CancellationToken ct);
 
-    Task<IReadOnlyList<OrderSummary>> GetAllAsync(OrderFilter filter, CancellationToken ct);
+    // Devuelve null si el pedido no existe
+    Task<OrderDetailDto?> GetByIdAsync(int orderId, CancellationToken ct);
 
-    Task<IReadOnlyList<CustomerOrderHistoryLine>> GetCustomerHistoryAsync(int customerId, CancellationToken ct);
+    Task<List<CustomerOrderHistoryDto>> GetCustomerHistoryAsync(int customerId, CancellationToken ct);
 
-    /// <summary>Llama a sp_delete_order: devuelve el stock y borra en cascada. Lanza NW404 si no existe.</summary>
+    // Llama a sp_delete_order: devuelve el stock y borra en cascada
     Task DeleteAsync(int orderId, int employeeId, CancellationToken ct);
 }
