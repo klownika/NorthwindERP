@@ -1,21 +1,18 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { MockDb } from '../mock/mock-db';
 import { Employee, Shipper, Supplier } from '../models/api.models';
 
-/**
- * Personal y logística: LogisticsControllers.cs (empleados, transportistas, proveedores).
- * ⚠ MOCK: lee de MockDb mientras el backend no existe.
- */
+/** Personal y logística: EmployeesController, ShippersController y SuppliersController. */
 @Injectable({ providedIn: 'root' })
 export class StaffApi {
-  private db = inject(MockDb);
+  private http = inject(HttpClient);
 
   /** GET /api/employees */
-  employees() { return this.db.respond<Employee[]>(this.db.employees); }
+  employees() { return this.http.get<Employee[]>('/api/employees'); }
 
   /** GET /api/shippers */
-  shippers() { return this.db.respond<Shipper[]>(this.db.shippers); }
+  shippers() { return this.http.get<Shipper[]>('/api/shippers'); }
 
   /** GET /api/suppliers */
-  suppliers() { return this.db.respond<Supplier[]>(this.db.suppliers); }
+  suppliers() { return this.http.get<Supplier[]>('/api/suppliers'); }
 }
