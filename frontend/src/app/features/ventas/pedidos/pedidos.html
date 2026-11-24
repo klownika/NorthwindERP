@@ -23,16 +23,26 @@
   <app-load-state [loading]="load.loading()" [error]="load.error()" />
   <app-pager [pager]="pager" />
 
-  <div class="table-box">
-    <div style="min-width: 960px">
+  <div class="table-box responsive">
+    <div style="min-width: 930px">
       <div class="thr" [style.grid-template-columns]="cols">
-        <div>Pedido</div><div>Fecha</div><div>Cliente</div><div>Vendedor</div><div>Transportista</div><div class="r">Líneas</div><div class="r">Total</div>
+        <div>Pedido</div><div>Fecha</div><div>Cliente</div><div>Vendedor</div><div>Transportista</div><div class="r">Líneas</div><div class="r">Total</div><div class="r">Acciones</div>
       </div>
       @for (o of pager.rows(); track o.orderId) {
         <div class="tr" [style.grid-template-columns]="cols">
-          <div><a class="linkbtn" [routerLink]="['/ventas/pedidos', o.orderId]">#{{ o.orderId }}</a></div>
-          <div>{{ fmtDate(o.orderDate) }}</div><div class="sb">{{ o.customerName }}</div><div>{{ o.employeeName }}</div>
-          <div>{{ o.shipperName ?? '—' }}</div><div class="r">{{ o.lineCount }}</div><div class="r b">{{ money(o.orderTotal) }}</div>
+          <div data-label="Pedido"><a class="linkbtn" [routerLink]="['/ventas/pedidos', o.orderId]">#{{ o.orderId }}</a></div>
+          <div data-label="Fecha">{{ fmtDate(o.orderDate) }}</div>
+          <div class="sb" data-label="Cliente">{{ o.customerName }}</div>
+          <div data-label="Vendedor">{{ o.employeeName }}</div>
+          <div data-label="Transportista">{{ o.shipperName ?? '—' }}</div>
+          <div class="r" data-label="Líneas">{{ o.lineCount }}</div>
+          <div class="r b" data-label="Total">{{ money(o.orderTotal) }}</div>
+          <div class="cell-actions">
+            <a class="rowbtn" [routerLink]="['/ventas/pedidos', o.orderId]" [attr.aria-label]="'Ver pedido #' + o.orderId" title="Ver detalle"><app-icon name="eye" [size]="18" /></a>
+            @if (auth.isAdmin()) {
+              <button type="button" class="rowbtn del" [attr.aria-label]="'Eliminar pedido #' + o.orderId" title="Eliminar" (click)="askDelete(o)"><app-icon name="trash" [size]="18" /></button>
+            }
+          </div>
         </div>
       } @empty {
         @if (!load.loading()) { <div class="empty">No hay pedidos con estos filtros.</div> }
@@ -40,3 +50,11 @@
     </div>
   </div>
 </div>
+
+<app-confirm-dialog [open]="!!toDelete()" [title]="'¿Eliminar el pedido #' + (toDelete()?.orderId ?? '') + '?'"
+                    message="Si el pedido movió inventario, el stock vuelve a su almacén y queda registrado en el Kardex. Esta acción no se puede deshacer."
+                    [busy]="deleting()" [error]="deleteError()" (confirmed)="confirmDelete()" (cancelled)="cancelDelete()" />
+
+<app-drawer [open]="detailOpen()" label="Detalle del pedido" closeTo="/ventas/pedidos">
+  <router-outlet (activate)="detailOpen.set(true)" (deactivate)="detailOpen.set(false)" />
+</app-drawer>

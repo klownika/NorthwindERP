@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { InventoryApi } from '../../../core/api/inventory.api';
 import { SalesApi } from '../../../core/api/sales.api';
@@ -10,13 +10,15 @@ import { UiError, toUiError } from '../../../core/util/problem';
 import { PageService } from '../../../layout/page.service';
 import { LowStockService } from '../../../layout/low-stock.service';
 import { Loader } from '../../../shared/data/loader';
+import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog';
 import { IconComponent } from '../../../shared/ui/icon';
 import { LoadStateComponent } from '../../../shared/ui/load-state';
+import { ToastService } from '../../../shared/ui/toast';
 
 /** Sub-subinterfaz: detalle de un pedido + eliminar (sp_delete_order, solo Admin). */
 @Component({
   selector: 'app-pedido-detalle',
-  imports: [RouterLink, IconComponent, LoadStateComponent],
+  imports: [ConfirmDialogComponent, IconComponent, LoadStateComponent],
   templateUrl: './pedido-detalle.html',
   styleUrl: './pedido-detalle.scss',
 })
@@ -26,6 +28,7 @@ export class PedidoDetalleComponent {
   private router = inject(Router);
   private page = inject(PageService);
   private lowStock = inject(LowStockService);
+  private toast = inject(ToastService);
   readonly auth = inject(AuthService);
 
   readonly id = Number(inject(ActivatedRoute).snapshot.paramMap.get('id'));
@@ -41,6 +44,10 @@ export class PedidoDetalleComponent {
   readonly money = money;
   readonly int = int;
   readonly cols = 'minmax(220px, 1fr) 160px 100px 120px 140px';
+
+  readonly deleteMessage = computed(() => (this.moves().length
+    ? 'El stock vuelve a su almacén de origen y la devolución queda registrada en el Kardex. Esta acción no se puede deshacer.'
+    : 'Este pedido no movió inventario: se eliminan el pedido y sus productos. Esta acción no se puede deshacer.'));
 
   readonly facts = computed(() => {
     const o = this.detail()?.order;
@@ -71,12 +78,14 @@ export class PedidoDetalleComponent {
     this.sales.deleteOrder(this.id).subscribe({
       next: () => {
         this.lowStock.refresh();
+        this.page.notifyDataChanged();
+        this.toast.show(`Pedido #${this.id} eliminado.`);
+        this.confirming.set(false);
         this.router.navigate(['/ventas/pedidos']);
       },
       error: (e: unknown) => {
         this.deleteError.set(toUiError(e));
         this.deleting.set(false);
-        this.confirming.set(false);
       },
     });
   }

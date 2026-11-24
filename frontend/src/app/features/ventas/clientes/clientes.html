@@ -5,16 +5,23 @@
   </div>
   <app-load-state [loading]="load.loading()" [error]="load.error()" />
   <app-pager [pager]="pager" />
-  <div class="table-box">
-    <div style="min-width: 900px">
+  <div class="table-box responsive">
+    <div style="min-width: 850px">
       <div class="thr" [style.grid-template-columns]="cols">
-        <div>ID</div><div>Cliente</div><div>Contacto</div><div>Ciudad</div><div>País</div><div class="r">Pedidos</div><div></div>
+        <div>ID</div><div>Cliente</div><div>Contacto</div><div>Ciudad</div><div>País</div><div class="r">Pedidos</div><div class="r">Acciones</div>
       </div>
       @for (c of pager.rows(); track c.customerId) {
         <div class="tr" [style.grid-template-columns]="cols">
-          <div class="muted">{{ c.customerId }}</div><div class="sb">{{ c.customerName }}</div><div>{{ c.contactName }}</div>
-          <div>{{ c.city }}</div><div>{{ c.country }}</div><div class="r">{{ c.orders }}</div>
-          <div><a class="linkbtn" [routerLink]="['/ventas/clientes', c.customerId]">Ver ficha</a></div>
+          <div class="muted" data-label="ID">{{ c.customerId }}</div>
+          <div class="sb" data-label="Cliente">{{ c.customerName }}</div>
+          <div data-label="Contacto">{{ c.contactName ?? '—' }}</div>
+          <div data-label="Ciudad">{{ c.city ?? '—' }}</div>
+          <div data-label="País">{{ c.country ?? '—' }}</div>
+          <div class="r" data-label="Pedidos">{{ c.orders }}</div>
+          <div class="cell-actions">
+            <a class="rowbtn" [routerLink]="['/ventas/clientes', c.customerId]" [attr.aria-label]="'Ver ficha de ' + c.customerName" title="Ver ficha"><app-icon name="eye" [size]="18" /></a>
+            <a class="rowbtn" routerLink="/ventas/nuevo-pedido" [queryParams]="{ customerId: c.customerId }" [attr.aria-label]="'Nuevo pedido para ' + c.customerName" title="Nuevo pedido"><app-icon name="plus" [size]="18" /></a>
+          </div>
         </div>
       } @empty {
         @if (!load.loading()) { <div class="empty">No hay clientes con ese filtro.</div> }
@@ -22,3 +29,7 @@
     </div>
   </div>
 </div>
+
+<app-drawer [open]="detailOpen()" label="Ficha del cliente" closeTo="/ventas/clientes">
+  <router-outlet (activate)="detailOpen.set(true)" (deactivate)="detailOpen.set(false)" />
+</app-drawer>

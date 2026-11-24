@@ -1,34 +1,16 @@
 <div class="top">
-  <a class="ghost" routerLink="/ventas/pedidos"><app-icon name="back" [size]="16" [stroke]="2.4" />Volver a pedidos</a>
   @if (auth.isAdmin()) {
-    @if (!confirming()) { <button type="button" class="danger" (click)="confirming.set(true)" [disabled]="!detail()">Eliminar pedido</button> }
+    @if (!confirming()) { <button type="button" class="danger" (click)="deleteError.set(null); confirming.set(true)" [disabled]="!detail()"><app-icon name="trash" [size]="16" />Eliminar pedido</button> }
   } @else {
     <span class="muted">Solo un Admin puede eliminar pedidos (403).</span>
   }
 </div>
 
 @if (flash()) {
-  <div class="alert ok" role="status"><strong>201 CREATED · Location: /api/orders/{{ id }}</strong><span>{{ flash() }}</span></div>
+  <div class="alert ok" role="status"><strong>PEDIDO REGISTRADO</strong><span>{{ flash() }}</span></div>
 }
-@if (confirming()) {
-  <div class="alert err" role="alertdialog" aria-label="Confirmar eliminación">
-    <strong style="font-size: 15px">¿Eliminar el pedido #{{ id }}?</strong>
-    <span>
-      @if (moves().length) {
-        Se devolverá el stock al almacén de origen y se registrará un INBOUND "Return - order {{ id }} deleted" en el Kardex. Los detalles se borran en cascada.
-      } @else {
-        Este pedido no movió inventario: se eliminan el pedido y sus detalles (ON DELETE CASCADE).
-      }
-    </span>
-    <div class="btns">
-      <button type="button" class="danger" (click)="remove()" [disabled]="deleting()">{{ deleting() ? 'Eliminando…' : 'Sí, eliminar' }}</button>
-      <button type="button" class="ghost" (click)="confirming.set(false)">Cancelar</button>
-    </div>
-  </div>
-}
-@if (deleteError(); as e) {
-  <div class="alert err" role="alert"><strong>{{ e.title }}</strong>@for (m of e.messages; track m) { <span>{{ m }}</span> }</div>
-}
+<app-confirm-dialog [open]="confirming()" [title]="'¿Eliminar el pedido #' + id + '?'" [message]="deleteMessage()"
+                    [busy]="deleting()" [error]="deleteError()" (confirmed)="remove()" (cancelled)="confirming.set(false)" />
 
 <app-load-state [loading]="load.loading()" [error]="load.error()" />
 

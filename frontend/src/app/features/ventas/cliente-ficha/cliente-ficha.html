@@ -1,4 +1,3 @@
-<div><a class="ghost" routerLink="/ventas/clientes"><app-icon name="back" [size]="16" [stroke]="2.4" />Volver a clientes</a></div>
 <app-load-state [loading]="load.loading()" [error]="load.error()" />
 
 @if (customer(); as c) {
@@ -31,7 +30,7 @@
     <h2 class="section-title">Historial de pedidos</h2>
     <app-pager [pager]="pager" />
     <div class="table-box">
-      <div style="min-width: 980px">
+      <div style="min-width: 850px">
         <div class="thr" [style.grid-template-columns]="cols">
           <div>Pedido</div><div>Fecha</div><div>Transportista</div><div>Vendedor</div><div>Producto</div><div class="r">Cant.</div><div class="r">Precio</div><div class="r">Total</div>
         </div>

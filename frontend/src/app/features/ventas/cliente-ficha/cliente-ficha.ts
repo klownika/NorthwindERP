@@ -8,14 +8,13 @@ import { fmtDate, int, money } from '../../../core/util/format';
 import { toUiError } from '../../../core/util/problem';
 import { PageService } from '../../../layout/page.service';
 import { Loader } from '../../../shared/data/loader';
-import { IconComponent } from '../../../shared/ui/icon';
 import { LoadStateComponent } from '../../../shared/ui/load-state';
 import { Pager, PagerComponent } from '../../../shared/ui/pager';
 
 /** Sub-subinterfaz: ficha del cliente, PUT de dirección e historial (get_customer_order_history). */
 @Component({
   selector: 'app-cliente-ficha',
-  imports: [FormsModule, RouterLink, IconComponent, LoadStateComponent, PagerComponent],
+  imports: [FormsModule, RouterLink, LoadStateComponent, PagerComponent],
   templateUrl: './cliente-ficha.html',
   styleUrl: './cliente-ficha.scss',
 })
@@ -34,7 +33,7 @@ export class ClienteFichaComponent {
   readonly money = money;
   readonly int = int;
   readonly fmtDate = fmtDate;
-  readonly cols = '100px 120px 150px 160px minmax(200px, 1fr) 80px 100px 120px';
+  readonly cols = '84px 96px 120px 130px minmax(170px, 1fr) 60px 90px 100px';
 
   readonly stats = computed(() => {
     const h = this.history();
@@ -61,7 +60,7 @@ export class ClienteFichaComponent {
     this.sales.updateCustomer(this.id, {
       address: v.address || null, city: v.city || null, postalCode: v.postalCode || null, country: v.country || null,
     }).subscribe({
-      next: (c) => { this.setCustomer(c); this.msg.set({ ok: true, title: '200 OK', text: 'Dirección actualizada.' }); this.saving.set(false); },
+      next: (c) => { this.setCustomer(c); this.page.notifyDataChanged(); this.msg.set({ ok: true, title: '200 OK', text: 'Dirección actualizada.' }); this.saving.set(false); },
       error: (e: unknown) => {
         const ui = toUiError(e);
         this.msg.set({ ok: false, title: ui.title, text: ui.messages.join(' ') });
