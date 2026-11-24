@@ -30,10 +30,9 @@ export class LoginComponent {
     this.busy.set(true);
     this.error.set(null);
     this.auth.login({ username: this.username().trim(), password: this.password() }).subscribe({
-      next: (s) => this.router.navigate([s.changePassword ? '/cuenta' : '/']),
+      next: (s) => this.router.navigate([s.mustChangePassword ? '/cuenta' : '/']),
       error: (e: unknown) => {
-        const ui = toUiError(e);
-        this.error.set(ui.title.startsWith('401') ? { title: '401 UNAUTHORIZED', messages: ['Invalid username or password.'] } : ui);
+        this.error.set(toUiError(e));
         this.busy.set(false);
       },
     });

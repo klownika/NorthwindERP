@@ -28,7 +28,7 @@ export class MiCuentaComponent {
       { label: 'Rol', value: m?.role ?? s?.role ?? '—' },
       { label: 'Empleado (ID)', value: String(m?.employeeId ?? s?.employeeId ?? '—') },
       { label: 'UserAccountID', value: String(m?.userId ?? s?.userId ?? '—') },
-      { label: 'ChangePassword', value: s?.changePassword ? 'true' : 'false' },
+      { label: 'ChangePassword', value: s?.mustChangePassword ? 'true' : 'false' },
       { label: 'Token expira', value: s ? new Date(s.expiresAtUtc).toLocaleString() : '—' },
     ];
   });
