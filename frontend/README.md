@@ -3,17 +3,9 @@
 Interfaz web de **NorthwindERP / StockIN**, hecha en **Angular 22** (componentes standalone, signals y control flow `@if`/`@for`).
 Consume la API de `../backend` (ASP.NET Core) y respeta el diseño DORfic del prototipo: sidebar naranja comprimible, franja por módulo, tablas paginadas y reportes con gráficos.
 
-> ## ⚠ Estado actual: datos simulados (mock)
-> El backend solo tiene listos **Auth, Ventas (pedidos) y Customers**; el resto de módulos aún no existe y la conexión la hará otra persona del equipo.
-> Por eso **ningún servicio llama todavía a `HttpClient`**: todos leen y escriben en memoria desde `src/app/core/mock/mock-db.ts`
-> (los cambios se pierden al recargar la página).
->
-> **Usuarios de prueba:** `admin` / `Admin123!` (rol Admin, puede eliminar pedidos) y `vendedor` / `Vendedor123!`.
->
-> **Cómo conectar el backend real:** en cada método de `core/api/*.api.ts` y de `core/auth/auth.service.ts`, el comentario
-> `/** GET /api/... */` indica el endpoint. Reemplaza el cuerpo por la llamada con `HttpClient` (el interceptor del token y
-> `core/util/params.ts` ya están listos), conserva la firma del método (las pantallas no cambian) y, al terminar,
-> borra `core/mock/`. En desarrollo `proxy.conf.json` redirige `/api` a `http://localhost:5080`.
+> **Conexión con el backend:** todos los servicios de `core/api/*.api.ts` y `core/auth/auth.service.ts` llaman a la API real con `HttpClient`.
+> En desarrollo `proxy.conf.json` redirige `/api` a `http://localhost:5080`, así que el backend debe estar corriendo para usar la app.
+> Las credenciales son las de la tabla `UserAccounts` de la base de datos.
 
 ## Requisitos
 
@@ -21,7 +13,7 @@ Consume la API de `../backend` (ASP.NET Core) y respeta el diseño DORfic del pr
 |---|---|
 | Node.js | 22 LTS o superior |
 | npm | 10+ |
-| Backend (cuando se conecte) | `NorthwindERP.API` corriendo en `http://localhost:5080` |
+| Backend | `NorthwindERP.API` corriendo en `http://localhost:5080` |
 
 ## Ejecutar en local
 
@@ -46,7 +38,6 @@ src/app/
 │   │   ├── sales.api.ts       #   /api/orders/*, /api/customers/*
 │   │   ├── staff.api.ts       #   /api/employees, /api/shippers, /api/suppliers
 │   │   └── reports.api.ts     #   /api/reports/*
-│   ├── mock/mock-db.ts        # datos simulados en memoria (se borra al conectar el backend)
 │   ├── auth/                  # login, JWT, interceptor y guards
 │   └── util/                  # formatos ($, fechas), errores ProblemDetails, HttpParams
 ├── layout/                    # estructura fija
