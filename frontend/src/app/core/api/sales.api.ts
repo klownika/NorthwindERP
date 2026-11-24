@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { MockDb, RawOrder } from '../mock/mock-db';
 import {
@@ -13,6 +14,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class SalesApi {
   private db = inject(MockDb);
+  private http = inject(HttpClient);
 
   private lines(o: RawOrder): OrderLine[] {
     return o.lines.map((l) => {
@@ -110,26 +112,16 @@ export class SalesApi {
 
   /** GET /api/customers */
   customers() {
-    return this.db.respond<Customer[]>(this.db.customers);
+    return this.http.get<Customer[]>('/api/customers');
   }
 
   /** GET /api/customers/{id} */
   customer(id: number) {
-    const c = this.db.customerById(id);
-    return c ? this.db.respond<Customer>(c) : this.db.fail(404, 'Not Found', `Customer ${id} not found.`);
+    return this.http.get<Customer>(`/api/customers/${id}`);
   }
 
   /** PUT /api/customers/{id}  (solo dirección) */
   updateCustomer(id: number, body: UpdateCustomerContact) {
-    const c = this.db.customerById(id);
-    if (!c) return this.db.fail(404, 'Not Found', `Customer ${id} not found.`);
-    if (body.address == null && body.city == null && body.postalCode == null && body.country == null) {
-      return this.db.fail(400, 'Bad Request', 'Send at least one address field to update.');
-    }
-    Object.assign(c, {
-      address: body.address ?? c.address, city: body.city ?? c.city,
-      postalCode: body.postalCode ?? c.postalCode, country: body.country ?? c.country,
-    });
-    return this.db.respond<Customer>(c);
+    return this.http.put<Customer>(`/api/customers/${id}`, body);
   }
 }
