@@ -1,6 +1,7 @@
-<div class="app">
+<div class="app" [class.is-mini]="mini()">
+  @if (menuOpen()) { <button type="button" class="scrim" tabindex="-1" aria-label="Cerrar menú" (click)="menuOpen.set(false)"></button> }
   <!-- ===================== SIDEBAR ===================== -->
-  <nav aria-label="Módulos" class="sidebar" [class.mini]="mini()">
+  <nav id="main-menu" aria-label="Módulos" class="sidebar" [class.mini]="mini()" [class.menu-open]="menuOpen()">
     <svg class="deco" aria-hidden="true" viewBox="0 0 260 900" preserveAspectRatio="none">
       <defs>
         <radialGradient id="sbGlow" cx="0.5" cy="0.5" r="0.5">
@@ -65,13 +66,16 @@
   <!-- ===================== CONTENIDO ===================== -->
   <div class="content">
     <header class="topbar">
+      <button type="button" class="iconbtn menu-btn" aria-label="Abrir menú" aria-controls="main-menu" [attr.aria-expanded]="menuOpen()" (click)="menuOpen.set(true)">
+        <app-icon name="menu" />
+      </button>
       <form class="search" role="search" (submit)="$event.preventDefault(); doSearch()">
         <app-icon name="search" [size]="18" />
         <label for="hq" class="sr">Buscar producto</label>
         <input id="hq" [value]="search()" (input)="search.set($any($event.target).value)" placeholder="Buscar producto en el catálogo…" />
       </form>
       <div class="actions">
-        <a class="primary" routerLink="/ventas/nuevo-pedido"><app-icon name="plus" [size]="18" [stroke]="2.6" />Nuevo pedido</a>
+        <a class="primary new-order" routerLink="/ventas/nuevo-pedido" aria-label="Nuevo pedido"><app-icon name="plus" [size]="18" [stroke]="2.6" /><span>Nuevo pedido</span></a>
         <a class="iconbtn" routerLink="/inventario/stock" [queryParams]="{ low: 1 }"
            [attr.aria-label]="lowStock.count() ? 'Productos por reponer: ' + lowStock.count() : 'Sin productos por reponer'">
           <app-icon name="alert" />
@@ -83,66 +87,40 @@
     <div class="stripe" aria-hidden="true"></div>
 
     <main class="main">
-      <!-- franja DORfic -->
-      <div class="hero">
-        <svg class="hero-deco" aria-hidden="true" viewBox="0 0 1200 170" preserveAspectRatio="none">
-          <path d="M520 170 C 760 130 940 70 1200 22 L1200 170 Z" fill="#FBBF24" opacity="0.28" />
-          <path d="M660 170 C 860 140 1010 96 1200 66 L1200 170 Z" fill="#FDE68A" opacity="0.30" />
-          <path d="M480 160 C 740 120 930 60 1200 10" stroke="#FFFFFF" stroke-width="2.5" fill="none" opacity="0.75" />
-          <path d="M600 170 C 820 140 990 100 1200 78" stroke="#FFFFFF" stroke-width="1.2" fill="none" opacity="0.6" />
-          <g fill="none" stroke="#FFFFFF" stroke-opacity="0.28"><circle cx="1090" cy="58" r="34" stroke-width="5" /><circle cx="1090" cy="58" r="56" stroke-width="1.5" /></g>
-          <rect x="0" y="0" width="1200" height="60" fill="#FFFFFF" opacity="0.07" />
-        </svg>
-        <nav aria-label="Ruta" class="crumbs">
-          <a routerLink="/">StockIN</a>
-          @if (currentModule(); as m) { <span aria-hidden="true">›</span><a [routerLink]="m.subs[0].path">{{ m.label }}</a> }
-          @if (page.crumbOverride()) {
-            <span aria-hidden="true">›</span><a [routerLink]="currentSub()?.path">{{ currentSub()?.label }}</a>
-            <span aria-hidden="true">›</span><strong>{{ page.crumbOverride() }}</strong>
-          } @else if (data().module) {
-            <span aria-hidden="true">›</span><strong>{{ currentSub()?.label ?? data().title }}</strong>
-          } @else if (url() !== '/') {
-            <span aria-hidden="true">›</span><strong>{{ data().title }}</strong>
-          }
-        </nav>
-        <div class="hero-row">
-          <div class="hero-title">
-            <div class="hero-text">
-              <span class="accent-line" aria-hidden="true"></span>
+      <div class="page-head">
+        <div class="head-main">
+          <nav aria-label="Ruta" class="crumbs">
+            <a routerLink="/">StockIN</a>
+            @if (currentModule(); as m) { <span aria-hidden="true">›</span><a [routerLink]="m.subs[0].path">{{ m.label }}</a> }
+            @if (page.crumbOverride()) {
+              <span aria-hidden="true">›</span><a [routerLink]="currentSub()?.path">{{ currentSub()?.label }}</a>
+              <span aria-hidden="true">›</span><strong>{{ page.crumbOverride() }}</strong>
+            } @else if (data().module) {
+              <span aria-hidden="true">›</span><strong>{{ currentSub()?.label ?? data().title }}</strong>
+            } @else if (url() !== '/') {
+              <span aria-hidden="true">›</span><strong>{{ data().title }}</strong>
+            }
+          </nav>
+          <div class="head-title">
+            <span class="head-icon" aria-hidden="true"><app-icon [name]="headIcon()" [size]="24" /></span>
+            <div class="head-text">
               <h1>{{ title() }}</h1>
               <p>{{ data().subtitle }}</p>
             </div>
-            @if (data().accountIcon) {
-              <svg aria-hidden="true" width="58" height="66" viewBox="0 0 64 72" class="acc-ico">
-                <defs>
-                  <radialGradient id="acHead" cx="0.38" cy="0.32" r="0.72"><stop offset="0" stop-color="#FFE7BA" /><stop offset="0.35" stop-color="#FDBA4D" /><stop offset="0.75" stop-color="#F97316" /><stop offset="1" stop-color="#C2410C" /></radialGradient>
-                  <radialGradient id="acBody" cx="0.4" cy="0.2" r="0.9"><stop offset="0" stop-color="#FFD08A" /><stop offset="0.4" stop-color="#F97316" /><stop offset="1" stop-color="#B53C0A" /></radialGradient>
-                </defs>
-                <path d="M6 66 C 6 50 17 41 32 41 C 47 41 58 50 58 66 C 58 70 56 72 52 72 L12 72 C 8 72 6 70 6 66 Z" fill="url(#acBody)" />
-                <path d="M6 66 C 6 50 17 41 32 41 C 47 41 58 50 58 66" fill="none" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="1.2" />
-                <ellipse cx="23" cy="51" rx="10" ry="4" fill="#FFFFFF" opacity="0.5" transform="rotate(-18 23 51)" />
-                <circle cx="32" cy="22" r="15.5" fill="url(#acHead)" />
-                <circle cx="32" cy="22" r="15" fill="none" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="1" />
-                <ellipse cx="27" cy="14.5" rx="7" ry="4.2" fill="#FFFFFF" opacity="0.8" transform="rotate(-22 27 14.5)" />
-                <circle cx="38" cy="30" r="2" fill="#FFFFFF" opacity="0.35" />
-              </svg>
-            }
           </div>
-          <span class="src" title="Endpoint y objeto de la base de datos que alimentan esta pantalla">
-            <app-icon name="db" [size]="14" [stroke]="2.2" />{{ data().src }}
-          </span>
         </div>
       </div>
 
       @if (currentModule(); as m) {
-        <div role="tablist" aria-label="Submódulos" class="tabs">
+        <nav aria-label="Submódulos" class="tabs">
           @for (s of m.subs; track s.path) {
-            <a role="tab" class="tab" [routerLink]="s.path" [class.on]="isActive(s.path)" [attr.aria-selected]="isActive(s.path)">{{ s.label }}</a>
+            <a class="tab" [routerLink]="s.path" [class.on]="isActive(s.path)" [attr.aria-current]="isActive(s.path) ? 'page' : null">{{ s.label }}</a>
           }
-        </div>
+        </nav>
       }
 
       <router-outlet />
     </main>
   </div>
 </div>
+<app-toast-outlet />

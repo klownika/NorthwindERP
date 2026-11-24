@@ -45,8 +45,6 @@ export const NAV: NavModule[] = [
 export interface PageData {
   title: string;
   subtitle: string;
-  /** Endpoint y objeto de la BD que alimentan la pantalla. */
-  src: string;
   /** Clave del módulo (para pestañas y migas). Vacío en Inicio y Mi cuenta. */
   module?: string;
   /** Muestra el icono glossy de persona (Mi cuenta). */

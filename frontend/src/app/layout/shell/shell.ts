@@ -3,7 +3,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, NavigationStart, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
-import { IconComponent } from '../../shared/ui/icon';
+import { IconComponent, IconName } from '../../shared/ui/icon';
+import { ToastOutletComponent } from '../../shared/ui/toast';
 import { LowStockService } from '../low-stock.service';
 import { NAV, NavModule, PageData } from '../nav';
 import { PageService } from '../page.service';
@@ -13,9 +14,10 @@ const MINI_KEY = 'stockin.sidebar.mini';
 /** Estructura fija de la app: sidebar + header + franja DORfic + contenido de cada módulo. */
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, IconComponent],
+  imports: [RouterOutlet, RouterLink, IconComponent, ToastOutletComponent],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
+  host: { '(document:keydown.escape)': 'menuOpen.set(false)' },
 })
 export class ShellComponent {
   private router = inject(Router);
@@ -25,7 +27,8 @@ export class ShellComponent {
 
   readonly nav = NAV;
   readonly mini = signal(localStorage.getItem(MINI_KEY) === '1');
-  readonly open = signal<Record<string, boolean>>({ inventario: true });
+  readonly menuOpen = signal(false);
+  readonly open = signal<Record<string, boolean>>({});
   readonly search = signal('');
 
   /** URL actual (sin query) como signal. */
@@ -55,6 +58,7 @@ export class ShellComponent {
   readonly currentModule = computed<NavModule | undefined>(() => this.nav.find((m) => m.key === this.data().module));
   readonly currentSub = computed(() => this.currentModule()?.subs.find((s) => this.url().startsWith(s.path)));
   readonly title = computed(() => this.page.titleOverride() ?? this.data().title ?? '');
+  readonly headIcon = computed<IconName>(() => (this.data().accountIcon ? 'users' : this.currentModule()?.icon ?? 'home'));
 
   readonly me = computed(() => {
     const s = this.auth.session();
@@ -66,28 +70,37 @@ export class ShellComponent {
     this.lowStock.refresh();
     // Al salir de una pantalla se limpia el título de detalle (lo vuelve a poner la siguiente si lo necesita).
     this.router.events.pipe(filter((e) => e instanceof NavigationStart)).subscribe(() => this.page.clear());
-    // Abre automáticamente el módulo de la pantalla actual.
+    // Deja abierto solo el módulo de la pantalla actual y cierra el menú móvil al navegar.
+    this.openCurrentModule();
     this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => {
-      const m = this.currentModule();
-      if (m && !this.open()[m.key]) this.open.update((o) => ({ ...o, [m.key]: true }));
+      this.openCurrentModule();
+      this.menuOpen.set(false);
     });
   }
+
+  private openCurrentModule(): void {
+    const m = this.currentModule();
+    if (m) this.open.set({ [m.key]: true });
+  }
+
+  private isMobile(): boolean { return window.matchMedia('(max-width: 899px)').matches; }
 
   isActive(path: string): boolean { return this.url().startsWith(path); }
 
   toggleMini(): void {
+    if (this.isMobile()) { this.menuOpen.set(false); return; }
     this.mini.update((v) => !v);
     localStorage.setItem(MINI_KEY, this.mini() ? '1' : '0');
   }
 
   toggleModule(key: string): void {
-    if (this.mini()) {
+    if (this.mini() && !this.isMobile()) {
       this.mini.set(false);
       localStorage.setItem(MINI_KEY, '0');
-      this.open.update((o) => ({ ...o, [key]: true }));
+      this.open.set({ [key]: true });
       return;
     }
-    this.open.update((o) => ({ ...o, [key]: !o[key] }));
+    this.open.update((o) => (o[key] ? {} : { [key]: true }));
   }
 
   doSearch(): void {

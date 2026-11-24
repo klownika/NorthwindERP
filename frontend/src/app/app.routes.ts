@@ -25,7 +25,7 @@ export const routes: Routes = [
       {
         path: '', pathMatch: 'full',
         loadComponent: () => import('./features/inicio/inicio').then((m) => m.InicioComponent),
-        data: { title: 'Inicio', subtitle: 'Resumen de ventas, pedidos e inventario.', src: 'GET /api/orders · GET /api/reports/sales-by-customer · vw_stock_status' },
+        data: { title: 'Inicio', subtitle: 'Resumen de ventas, pedidos e inventario.' },
       },
       { path: 'inventario', loadChildren: () => import('./features/inventario/inventario.routes').then((m) => m.INVENTARIO_ROUTES) },
       { path: 'ventas', loadChildren: () => import('./features/ventas/ventas.routes').then((m) => m.VENTAS_ROUTES) },
@@ -33,7 +33,7 @@ export const routes: Routes = [
       {
         path: 'cuenta',
         loadComponent: () => import('./features/personal/mi-cuenta/mi-cuenta').then((m) => m.MiCuentaComponent),
-        data: { title: 'Mi cuenta', subtitle: 'Tu sesión y tu contraseña.', src: 'GET /api/auth/me · POST /api/auth/change-password · UserAccounts', accountIcon: true },
+        data: { title: 'Mi cuenta', subtitle: 'Tu sesión y tu contraseña.', accountIcon: true },
       },
       { path: 'reportes', loadChildren: () => import('./features/reportes/reportes.routes').then((m) => m.REPORTES_ROUTES) },
     ],
