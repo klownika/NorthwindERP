@@ -3,7 +3,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, NavigationStart, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
-import { IconComponent, IconName } from '../../shared/ui/icon';
+import { GlossyIconComponent, GlossyIconName } from '../../shared/ui/glossy-icon';
+import { IconComponent } from '../../shared/ui/icon';
 import { ToastOutletComponent } from '../../shared/ui/toast';
 import { LowStockService } from '../low-stock.service';
 import { NAV, NavModule, PageData } from '../nav';
@@ -14,7 +15,7 @@ const MINI_KEY = 'stockin.sidebar.mini';
 /** Estructura fija de la app: sidebar + header + franja DORfic + contenido de cada módulo. */
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, IconComponent, ToastOutletComponent],
+  imports: [RouterOutlet, RouterLink, IconComponent, GlossyIconComponent, ToastOutletComponent],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
   host: { '(document:keydown.escape)': 'menuOpen.set(false)' },
@@ -58,7 +59,7 @@ export class ShellComponent {
   readonly currentModule = computed<NavModule | undefined>(() => this.nav.find((m) => m.key === this.data().module));
   readonly currentSub = computed(() => this.currentModule()?.subs.find((s) => this.url().startsWith(s.path)));
   readonly title = computed(() => this.page.titleOverride() ?? this.data().title ?? '');
-  readonly headIcon = computed<IconName>(() => (this.data().accountIcon ? 'users' : this.currentModule()?.icon ?? 'home'));
+  readonly headIcon = computed<GlossyIconName>(() => (this.data().accountIcon ? 'users' : this.currentModule()?.glossy ?? 'home'));
 
   readonly me = computed(() => {
     const s = this.auth.session();

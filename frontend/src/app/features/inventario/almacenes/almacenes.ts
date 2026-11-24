@@ -5,13 +5,13 @@ import { InventoryApi } from '../../../core/api/inventory.api';
 import { StockItem, Warehouse } from '../../../core/models/api.models';
 import { int } from '../../../core/util/format';
 import { Loader } from '../../../shared/data/loader';
-import { IconComponent } from '../../../shared/ui/icon';
+import { GlossyIconComponent } from '../../../shared/ui/glossy-icon';
 import { LoadStateComponent } from '../../../shared/ui/load-state';
 
 /** Almacenes con su responsable y un resumen de su stock. */
 @Component({
   selector: 'app-almacenes',
-  imports: [RouterLink, IconComponent, LoadStateComponent],
+  imports: [RouterLink, GlossyIconComponent, LoadStateComponent],
   templateUrl: './almacenes.html',
   styleUrl: './almacenes.scss',
 })

@@ -4,19 +4,19 @@ import { SalesApi } from '../../../core/api/sales.api';
 import { StaffApi } from '../../../core/api/staff.api';
 import { OrderSummary, Shipper } from '../../../core/models/api.models';
 import { Loader } from '../../../shared/data/loader';
-import { IconComponent } from '../../../shared/ui/icon';
+import { GlossyIconComponent } from '../../../shared/ui/glossy-icon';
 import { LoadStateComponent } from '../../../shared/ui/load-state';
 
 /** Transportistas y cuántos pedidos llevan. */
 @Component({
   selector: 'app-transportistas',
-  imports: [IconComponent, LoadStateComponent],
+  imports: [GlossyIconComponent, LoadStateComponent],
   template: `
     <app-load-state [loading]="load.loading()" [error]="load.error()" />
     <div class="grid-auto" style="--min: 260px">
       @for (s of cards(); track s.shipperId) {
         <article class="card sh">
-          <span class="ico"><app-icon name="truck" [size]="22" /></span>
+          <span class="ico"><app-gicon name="truck" [size]="48" /></span>
           <h2>{{ s.shipperName }}</h2>
           <span class="txt">Teléfono: {{ s.phone ?? '—' }}</span>
           <span class="txt">Pedidos transportados: <strong>{{ s.orders }}</strong></span>
@@ -26,7 +26,7 @@ import { LoadStateComponent } from '../../../shared/ui/load-state';
   `,
   styles: `
     .sh { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-    .ico { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: #fff1e6; color: var(--or-700); }
+    .ico { display: inline-flex; align-self: flex-start; }
     h2 { margin: 0; font-size: 17px; font-weight: 800; }
     .txt { font-size: 14px; color: var(--ink-2); }
   `,

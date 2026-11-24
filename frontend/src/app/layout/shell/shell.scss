@@ -115,10 +115,7 @@
   strong { color: var(--or-800); }
 }
 .head-title { display: flex; align-items: center; gap: 14px; min-width: 0; }
-.head-icon {
-  flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px;
-  border-radius: 14px; background: #fff1e4; border: 1px solid var(--line); color: var(--or-700);
-}
+.head-icon { flex: 0 0 auto; display: inline-flex; }
 .head-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 h1 { margin: 0; font-size: clamp(23px, 2.2vw, 28px); font-weight: 800; letter-spacing: -.01em; color: var(--ink); }
 .head-text p { margin: 0; font-size: 14px; color: var(--ink-3); }
