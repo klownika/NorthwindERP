@@ -29,7 +29,7 @@
 
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
-body { background: var(--bg-1); font-family: var(--font); color: var(--ink); }
+body { background: #fff; font-family: var(--font); color: var(--ink); }
 button, input, select { font-family: inherit; }
 h1, h2, h3 { font-family: var(--font-display); }
 a { color: var(--or-700); }
@@ -87,6 +87,7 @@ code { font-family: var(--mono); }
 .lbl { font-size: 13px; font-weight: 700; color: var(--ink-2); }
 .fgroup { display: flex; flex-direction: column; gap: 6px; }
 .filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+@media (max-width: 560px) { .filters > .fgroup { flex: 1 1 100% !important; } }
 .pill {
   min-height: 36px; padding: 0 14px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
   background: #fff; color: var(--ink-2); border: 1px solid #e9c3a3;
@@ -98,7 +99,7 @@ code { font-family: var(--mono); }
 /* ---------- tarjetas ---------- */
 .card {
   background: #fff; border: 1px solid var(--line); border-radius: 18px;
-  box-shadow: inset 0 1px 0 #fff, 0 16px 32px -22px rgba(234, 88, 12, .6);
+  box-shadow: 0 1px 2px rgba(124, 45, 18, .06), 0 10px 24px -18px rgba(124, 45, 18, .28);
 }
 .card.accent { border-top: 3px solid var(--or-500); }
 .kpi-v { font-family: var(--font-display); color: var(--or-700); }
@@ -122,6 +123,32 @@ code { font-family: var(--mono); }
 .b { font-weight: 700; }
 .sb { font-weight: 600; }
 .empty { padding: 32px; text-align: center; color: var(--ink-3); }
+
+/* acciones por fila */
+.tr > .cell-actions { display: flex; justify-content: flex-end; gap: 4px; padding-block: 6px; overflow: visible; }
+.rowbtn {
+  display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; padding: 0; cursor: pointer;
+  border: 1px solid transparent; border-radius: 10px; background: transparent; color: var(--ink-3); transition: background .12s, color .12s, border-color .12s;
+}
+.rowbtn:hover { background: #fff; border-color: var(--or-400); color: var(--or-700); }
+.rowbtn.del:hover { background: var(--bad-bg); border-color: #fca5a5; color: var(--bad-ink); }
+
+/* en móvil, cada fila de una tabla .responsive pasa a ser una tarjeta */
+@media (max-width: 720px) {
+  .table-box.responsive { overflow: visible; border: 0; border-radius: 0; background: transparent; }
+  .table-box.responsive > div { min-width: 0 !important; display: flex; flex-direction: column; gap: 10px; }
+  .table-box.responsive .thr { display: none; }
+  .table-box.responsive .tr {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px 12px; padding: 12px 14px;
+    border: 1px solid var(--line); border-radius: 14px; background: #fff; box-shadow: 0 1px 2px rgba(124, 45, 18, .06);
+  }
+  .table-box.responsive .tr > div { padding: 0; white-space: normal; text-align: left; overflow-wrap: anywhere; }
+  .table-box.responsive .tr > [data-label]::before {
+    content: attr(data-label); display: block; margin-bottom: 1px; font-size: 11px; font-weight: 700; color: var(--ink-4);
+  }
+  .table-box.responsive .tr > .cell-actions { grid-column: 1 / -1; justify-content: flex-end; gap: 8px; padding-top: 8px; border-top: 1px solid var(--line-2); }
+  .table-box.responsive .rowbtn { width: 44px; height: 44px; border-color: var(--line); }
+}
 
 /* ---------- etiquetas ---------- */
 .tag { padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }

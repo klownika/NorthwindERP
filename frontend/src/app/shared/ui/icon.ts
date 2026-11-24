@@ -2,7 +2,7 @@ import { Component, input } from '@angular/core';
 
 export type IconName =
   | 'home' | 'box' | 'bag' | 'users' | 'chart' | 'search' | 'plus' | 'alert' | 'logout'
-  | 'back' | 'db' | 'check' | 'warehouse' | 'truck' | 'chevron';
+  | 'back' | 'db' | 'check' | 'warehouse' | 'truck' | 'chevron' | 'close' | 'menu' | 'eye' | 'trash';
 
 /** Iconos de línea (stroke) en SVG. Uso: <app-icon name="box" [size]="20" /> */
 @Component({
@@ -26,6 +26,10 @@ export type IconName =
         @case ('warehouse') { <path d="M3 21V8l9-5 9 5v13"/><path d="M7 21v-8h10v8"/><path d="M7 17h10"/> }
         @case ('truck') { <path d="M1 6h13v10H1z"/><path d="M14 9h4l4 4v3h-8"/><circle cx="5.5" cy="18.5" r="2"/><circle cx="17.5" cy="18.5" r="2"/> }
         @case ('chevron') { <path d="M6 9l6 6 6-6"/> }
+        @case ('close') { <path d="M18 6L6 18"/><path d="M6 6l12 12"/> }
+        @case ('menu') { <path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/> }
+        @case ('eye') { <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/> }
+        @case ('trash') { <path d="M3 6h18"/><path d="M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/> }
       }
     </svg>
   `,
