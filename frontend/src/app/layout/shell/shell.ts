@@ -71,7 +71,7 @@ export class ShellComponent {
     this.lowStock.refresh();
     // Al salir de una pantalla se limpia el título de detalle (lo vuelve a poner la siguiente si lo necesita).
     this.router.events.pipe(filter((e) => e instanceof NavigationStart)).subscribe(() => this.page.clear());
-    // Deja abierto solo el módulo de la pantalla actual y cierra el menú móvil al navegar.
+    // Abre el módulo de la pantalla actual (sin cerrar los que abrió el usuario) y cierra el menú móvil al navegar.
     this.openCurrentModule();
     this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => {
       this.openCurrentModule();
@@ -81,7 +81,7 @@ export class ShellComponent {
 
   private openCurrentModule(): void {
     const m = this.currentModule();
-    if (m) this.open.set({ [m.key]: true });
+    if (m && !this.open()[m.key]) this.open.update((o) => ({ ...o, [m.key]: true }));
   }
 
   private isMobile(): boolean { return window.matchMedia('(max-width: 899px)').matches; }
@@ -98,10 +98,11 @@ export class ShellComponent {
     if (this.mini() && !this.isMobile()) {
       this.mini.set(false);
       localStorage.setItem(MINI_KEY, '0');
-      this.open.set({ [key]: true });
+      this.open.update((o) => ({ ...o, [key]: true }));
       return;
     }
-    this.open.update((o) => (o[key] ? {} : { [key]: true }));
+    // Cada módulo se abre y se cierra por su cuenta, sin afectar a los demás.
+    this.open.update((o) => ({ ...o, [key]: !o[key] }));
   }
 
   doSearch(): void {
