@@ -6,6 +6,7 @@ import { InventoryApi } from '../../../core/api/inventory.api';
 import { Category, Product, StockItem, Warehouse } from '../../../core/models/api.models';
 import { int, money, norm } from '../../../core/util/format';
 import { Loader } from '../../../shared/data/loader';
+import { ComboOption, ComboboxComponent } from '../../../shared/ui/combobox';
 import { LoadStateComponent } from '../../../shared/ui/load-state';
 import { Pager, PagerComponent } from '../../../shared/ui/pager';
 
@@ -17,7 +18,7 @@ const TILES: [string, string][] = [
 /** Catálogo de productos en tarjetas, 8 por página. */
 @Component({
   selector: 'app-catalogo',
-  imports: [FormsModule, LoadStateComponent, PagerComponent],
+  imports: [FormsModule, ComboboxComponent, LoadStateComponent, PagerComponent],
   templateUrl: './catalogo.html',
   styleUrl: './catalogo.scss',
 })
@@ -29,6 +30,7 @@ export class CatalogoComponent {
   readonly categories = signal<Category[]>([]);
   readonly stock = signal<StockItem[]>([]);
   readonly warehouses = signal<Warehouse[]>([]);
+  readonly whOpts = computed<ComboOption[]>(() => this.warehouses().map((w) => ({ value: w.warehouseId, label: w.warehouseName })));
 
   readonly q = signal(inject(ActivatedRoute).snapshot.queryParamMap.get('q') ?? '');
   readonly cat = signal<number>(0);

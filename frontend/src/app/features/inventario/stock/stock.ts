@@ -6,13 +6,14 @@ import { InventoryApi } from '../../../core/api/inventory.api';
 import { StockItem, Warehouse } from '../../../core/models/api.models';
 import { int, norm } from '../../../core/util/format';
 import { Loader } from '../../../shared/data/loader';
+import { ComboOption, ComboboxComponent } from '../../../shared/ui/combobox';
 import { LoadStateComponent } from '../../../shared/ui/load-state';
 import { Pager, PagerComponent } from '../../../shared/ui/pager';
 
 /** Stock por almacén (vw_stock_status) con filtro de "por reponer". */
 @Component({
   selector: 'app-stock',
-  imports: [FormsModule, LoadStateComponent, PagerComponent],
+  imports: [FormsModule, ComboboxComponent, LoadStateComponent, PagerComponent],
   templateUrl: './stock.html',
 })
 export class StockComponent {
@@ -22,6 +23,7 @@ export class StockComponent {
   readonly load = new Loader();
   readonly rows = signal<StockItem[]>([]);
   readonly warehouses = signal<Warehouse[]>([]);
+  readonly whOpts = computed<ComboOption[]>(() => this.warehouses().map((w) => ({ value: w.warehouseId, label: w.warehouseName })));
   readonly q = signal('');
   readonly wh = signal<number>(Number(this.route.snapshot.queryParamMap.get('w') ?? 0));
   readonly lowOnly = signal(this.route.snapshot.queryParamMap.has('low'));

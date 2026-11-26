@@ -6,17 +6,11 @@
     </div>
     <div class="fgroup" style="flex: 0 1 220px">
       <label for="oe" class="lbl">Vendedor</label>
-      <select id="oe" class="field" [ngModel]="emp()" (ngModelChange)="setEmp(+$event)">
-        <option [ngValue]="0">Todos</option>
-        @for (e of employees(); track e.employeeId) { <option [ngValue]="e.employeeId">{{ e.fullName }}</option> }
-      </select>
+      <app-combobox inputId="oe" [options]="empOpts()" emptyLabel="Todos" [emptyValue]="0" [ngModel]="emp()" (ngModelChange)="setEmp($event)" />
     </div>
     <div class="fgroup" style="flex: 0 1 160px">
       <label for="oy" class="lbl">Año</label>
-      <select id="oy" class="field" [(ngModel)]="year">
-        <option value="">Todos</option>
-        @for (y of years(); track y) { <option [value]="y">{{ y }}</option> }
-      </select>
+      <app-combobox inputId="oy" [options]="yearOpts()" emptyLabel="Todos" emptyValue="" [(ngModel)]="year" />
     </div>
   </div>
 

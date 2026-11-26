@@ -4,20 +4,19 @@ import { ReportsApi } from '../../../core/api/reports.api';
 import { CustomerYearSales } from '../../../core/models/api.models';
 import { money } from '../../../core/util/format';
 import { Loader } from '../../../shared/data/loader';
+import { ComboOption, ComboboxComponent } from '../../../shared/ui/combobox';
 import { LoadStateComponent } from '../../../shared/ui/load-state';
 import { Pager, PagerComponent } from '../../../shared/ui/pager';
 
 /** Ventas por cliente y año (requisito: ventas con totales por año). */
 @Component({
   selector: 'app-anio-clientes',
-  imports: [FormsModule, LoadStateComponent, PagerComponent],
+  imports: [FormsModule, ComboboxComponent, LoadStateComponent, PagerComponent],
   template: `
     <div class="stack">
       <div class="fgroup" style="max-width: 200px">
         <label for="ryc" class="lbl">Año</label>
-        <select id="ryc" class="field" [ngModel]="year()" (ngModelChange)="year.set(+$event)">
-          @for (y of years(); track y) { <option [ngValue]="y">{{ y }}</option> }
-        </select>
+        <app-combobox inputId="ryc" [options]="yearOpts()" [ngModel]="year()" (ngModelChange)="year.set($event)" />
       </div>
       <app-load-state [loading]="load.loading()" [error]="load.error()" />
       <app-pager [pager]="pager" />
@@ -44,6 +43,7 @@ export class AnioClientesComponent {
   readonly cols = 'minmax(240px, 1fr) 90px 100px 140px 170px';
 
   readonly years = computed(() => [...new Set(this.all().map((r) => r.salesYear))].sort());
+  readonly yearOpts = computed<ComboOption[]>(() => this.years().map((y) => ({ value: y, label: String(y) })));
   readonly rows = computed(() => this.all().filter((r) => r.salesYear === this.year()).sort((a, b) => b.totalSales - a.totalSales));
   readonly pager = new Pager(this.rows, 10);
 

@@ -6,10 +6,7 @@
     </div>
     <div class="fgroup" style="flex: 0 1 260px">
       <label for="sw" class="lbl">Almacén</label>
-      <select id="sw" class="field" [ngModel]="wh()" (ngModelChange)="wh.set(+$event)">
-        <option [ngValue]="0">Todos los almacenes</option>
-        @for (w of warehouses(); track w.warehouseId) { <option [ngValue]="w.warehouseId">{{ w.warehouseName }}</option> }
-      </select>
+      <app-combobox inputId="sw" [options]="whOpts()" emptyLabel="Todos los almacenes" [emptyValue]="0" [ngModel]="wh()" (ngModelChange)="wh.set($event)" />
     </div>
     <button type="button" class="pill tall" [class.on]="lowOnly()" [attr.aria-pressed]="lowOnly()" (click)="lowOnly.set(!lowOnly())">Solo por reponer</button>
   </div>

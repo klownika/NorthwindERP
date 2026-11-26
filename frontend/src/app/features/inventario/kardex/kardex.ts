@@ -5,13 +5,14 @@ import { InventoryApi } from '../../../core/api/inventory.api';
 import { KardexEntry, KardexType, Warehouse } from '../../../core/models/api.models';
 import { fmtDateTime, int, norm } from '../../../core/util/format';
 import { Loader } from '../../../shared/data/loader';
+import { ComboOption, ComboboxComponent } from '../../../shared/ui/combobox';
 import { LoadStateComponent } from '../../../shared/ui/load-state';
 import { Pager, PagerComponent } from '../../../shared/ui/pager';
 
 /** Kardex (InventoryTransactions). Los filtros de almacén y tipo van a la API. */
 @Component({
   selector: 'app-kardex',
-  imports: [FormsModule, RouterLink, LoadStateComponent, PagerComponent],
+  imports: [FormsModule, ComboboxComponent, RouterLink, LoadStateComponent, PagerComponent],
   templateUrl: './kardex.html',
 })
 export class KardexComponent {
@@ -20,6 +21,7 @@ export class KardexComponent {
   readonly load = new Loader();
   readonly rows = signal<KardexEntry[]>([]);
   readonly warehouses = signal<Warehouse[]>([]);
+  readonly whOpts = computed<ComboOption[]>(() => this.warehouses().map((w) => ({ value: w.warehouseId, label: w.warehouseName })));
   readonly q = signal('');
   readonly wh = signal<number>(0);
   readonly type = signal<KardexType | null>(null);

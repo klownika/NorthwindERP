@@ -6,20 +6,19 @@ import { money, pct } from '../../../core/util/format';
 import { Loader } from '../../../shared/data/loader';
 import { ColumnChartComponent, ColumnGroup, LegendItem } from '../../../shared/ui/column-chart';
 import { Kpi, KpiGridComponent } from '../../../shared/ui/kpi-grid';
+import { ComboOption, ComboboxComponent } from '../../../shared/ui/combobox';
 import { LoadStateComponent } from '../../../shared/ui/load-state';
 import { YEAR_COLORS } from '../../../shared/ui/palette';
 
 /** Ventas por empleado y año: columnas agrupadas por año + ranking del año elegido. */
 @Component({
   selector: 'app-anio-empleados',
-  imports: [FormsModule, KpiGridComponent, ColumnChartComponent, LoadStateComponent],
+  imports: [FormsModule, ComboboxComponent, KpiGridComponent, ColumnChartComponent, LoadStateComponent],
   template: `
     <div class="stack">
       <div class="fgroup" style="max-width: 200px">
         <label for="rye" class="lbl">Año</label>
-        <select id="rye" class="field" [ngModel]="year()" (ngModelChange)="year.set(+$event)">
-          @for (y of years(); track y) { <option [ngValue]="y">{{ y }}</option> }
-        </select>
+        <app-combobox inputId="rye" [options]="yearOpts()" [ngModel]="year()" (ngModelChange)="year.set($event)" />
       </div>
       <app-load-state [loading]="load.loading()" [error]="load.error()" />
       <app-kpi-grid [items]="kpis()" />
@@ -46,6 +45,7 @@ export class AnioEmpleadosComponent {
   readonly money = money;
 
   readonly years = computed(() => [...new Set(this.all().map((r) => r.salesYear))].sort());
+  readonly yearOpts = computed<ComboOption[]>(() => this.years().map((y) => ({ value: y, label: String(y) })));
   readonly ofYear = computed(() => this.all().filter((r) => r.salesYear === this.year()).sort((a, b) => b.totalSales - a.totalSales));
   readonly ranking = computed(() => {
     const max = this.ofYear()[0]?.totalSales ?? 1;

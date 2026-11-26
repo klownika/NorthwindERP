@@ -13,6 +13,7 @@ import { Loader } from '../../../shared/data/loader';
 import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog';
 import { DrawerComponent } from '../../../shared/ui/drawer';
 import { IconComponent } from '../../../shared/ui/icon';
+import { ComboOption, ComboboxComponent } from '../../../shared/ui/combobox';
 import { LoadStateComponent } from '../../../shared/ui/load-state';
 import { Pager, PagerComponent } from '../../../shared/ui/pager';
 import { ToastService } from '../../../shared/ui/toast';
@@ -20,7 +21,7 @@ import { ToastService } from '../../../shared/ui/toast';
 /** Lista de pedidos. El filtro de vendedor va a la API (employeeId); cliente y año se filtran aquí. */
 @Component({
   selector: 'app-pedidos',
-  imports: [FormsModule, RouterLink, RouterOutlet, ConfirmDialogComponent, DrawerComponent, IconComponent, LoadStateComponent, PagerComponent],
+  imports: [FormsModule, ComboboxComponent, RouterLink, RouterOutlet, ConfirmDialogComponent, DrawerComponent, IconComponent, LoadStateComponent, PagerComponent],
   templateUrl: './pedidos.html',
 })
 export class PedidosComponent {
@@ -46,6 +47,8 @@ export class PedidosComponent {
   readonly cols = '88px 120px minmax(170px, 1fr) 150px 130px 64px 112px 96px';
 
   readonly years = computed(() => [...new Set(this.orders().map((o) => o.orderDate.slice(0, 4)))].sort());
+  readonly yearOpts = computed<ComboOption[]>(() => this.years().map((y) => ({ value: y, label: y })));
+  readonly empOpts = computed<ComboOption[]>(() => this.employees().map((e) => ({ value: e.employeeId, label: e.fullName })));
   readonly filtered = computed(() => {
     const q = norm(this.q());
     return this.orders()

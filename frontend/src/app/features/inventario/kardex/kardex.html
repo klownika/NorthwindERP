@@ -6,10 +6,7 @@
     </div>
     <div class="fgroup" style="flex: 0 1 240px">
       <label for="kw" class="lbl">Almacén</label>
-      <select id="kw" class="field" [ngModel]="wh()" (ngModelChange)="setWh(+$event)">
-        <option [ngValue]="0">Todos los almacenes</option>
-        @for (w of warehouses(); track w.warehouseId) { <option [ngValue]="w.warehouseId">{{ w.warehouseName }}</option> }
-      </select>
+      <app-combobox inputId="kw" [options]="whOpts()" emptyLabel="Todos los almacenes" [emptyValue]="0" [ngModel]="wh()" (ngModelChange)="setWh($event)" />
     </div>
     <div class="fgroup">
       <span class="lbl" id="kt">Tipo</span>

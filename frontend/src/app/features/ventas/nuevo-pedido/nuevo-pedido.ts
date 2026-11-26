@@ -11,6 +11,7 @@ import { int, money } from '../../../core/util/format';
 import { UiError, toUiError } from '../../../core/util/problem';
 import { LowStockService } from '../../../layout/low-stock.service';
 import { Loader } from '../../../shared/data/loader';
+import { ComboOption, ComboboxComponent } from '../../../shared/ui/combobox';
 import { IconComponent } from '../../../shared/ui/icon';
 import { LoadStateComponent } from '../../../shared/ui/load-state';
 
@@ -19,7 +20,7 @@ interface Line { key: number; productId: number; quantity: number; }
 /** Nuevo pedido → POST /api/orders/with-customer (sp_register_order: todo o nada). */
 @Component({
   selector: 'app-nuevo-pedido',
-  imports: [FormsModule, IconComponent, LoadStateComponent],
+  imports: [FormsModule, ComboboxComponent, IconComponent, LoadStateComponent],
   templateUrl: './nuevo-pedido.html',
   styleUrl: './nuevo-pedido.scss',
 })
@@ -51,8 +52,14 @@ export class NuevoPedidoComponent {
   readonly error = signal<UiError | null>(null);
   readonly money = money;
 
-  readonly sortedCustomers = computed(() => [...this.customers()].sort((a, b) => a.customerName.localeCompare(b.customerName)));
-  readonly sortedProducts = computed(() => [...this.products()].sort((a, b) => a.productName.localeCompare(b.productName)));
+  readonly customerOpts = computed<ComboOption[]>(() => [...this.customers()]
+    .sort((a, b) => a.customerName.localeCompare(b.customerName))
+    .map((c) => ({ value: c.customerId, label: c.customerName, hint: c.country })));
+  readonly productOpts = computed<ComboOption[]>(() => [...this.products()]
+    .sort((a, b) => a.productName.localeCompare(b.productName))
+    .map((p) => ({ value: p.productId, label: p.productName, hint: money(p.price) })));
+  readonly whOpts = computed<ComboOption[]>(() => this.warehouses().map((w) => ({ value: w.warehouseId, label: w.warehouseName })));
+  readonly shipperOpts = computed<ComboOption[]>(() => this.shippers().map((s) => ({ value: s.shipperId, label: s.shipperName })));
   readonly view = computed(() => {
     const w = this.warehouseId();
     const whName = this.warehouses().find((x) => x.warehouseId === w)?.warehouseName ?? '';
