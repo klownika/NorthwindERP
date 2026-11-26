@@ -96,10 +96,6 @@
   input { flex: 1 1 auto; min-width: 0; height: 40px; border: 0; background: transparent; font-size: 14px; color: var(--ink); outline: none; }
 }
 .actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
-.badge {
-  position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px;
-  background: #b91c1c; color: #fff; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center;
-}
 .stripe { height: 3px; background: linear-gradient(90deg, #b91c1c 0%, #ea580c 30%, #f59e0b 65%, #fde047 85%, rgba(253, 224, 71, 0) 100%); }
 .main { width: 100%; max-width: 1480px; margin-inline: auto; padding: 22px clamp(16px, 2.5vw, 32px) 48px; display: flex; flex-direction: column; gap: 18px; }
 
@@ -141,6 +137,7 @@ h1 { margin: 0; font-size: clamp(23px, 2.2vw, 28px); font-weight: 800; letter-sp
 }
 @media (max-width: 560px) {
   .new-order { width: 44px; padding: 0; span { display: none; } }
+  .actions { position: relative; }
 }
 @media (prefers-reduced-motion: reduce) {
   .sidebar { transition: none; }

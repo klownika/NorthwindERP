@@ -76,11 +76,7 @@
       </form>
       <div class="actions">
         <a class="primary new-order" routerLink="/ventas/nuevo-pedido" aria-label="Nuevo pedido"><app-icon name="plus" [size]="18" [stroke]="2.6" /><span>Nuevo pedido</span></a>
-        <a class="iconbtn" routerLink="/inventario/stock" [queryParams]="{ low: 1 }"
-           [attr.aria-label]="lowStock.count() ? 'Productos por reponer: ' + lowStock.count() : 'Sin productos por reponer'">
-          <app-icon name="alert" />
-          @if (lowStock.count()) { <span class="badge" aria-hidden="true">{{ lowStock.count() }}</span> }
-        </a>
+        <app-notifications />
         <a class="iconbtn avatar" routerLink="/cuenta" aria-label="Mi cuenta">{{ me().initials }}</a>
       </div>
     </header>

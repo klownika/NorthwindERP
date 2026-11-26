@@ -6,9 +6,9 @@
     </div>
     <div class="fgroup" style="flex: 0 1 260px">
       <label for="sw" class="lbl">Almacén</label>
-      <app-combobox inputId="sw" [options]="whOpts()" emptyLabel="Todos los almacenes" [emptyValue]="0" [ngModel]="wh()" (ngModelChange)="wh.set($event)" />
+      <app-combobox inputId="sw" [options]="whOpts()" emptyLabel="Todos los almacenes" [emptyValue]="0" [ngModel]="wh()" (ngModelChange)="setWh($event)" />
     </div>
-    <button type="button" class="pill tall" [class.on]="lowOnly()" [attr.aria-pressed]="lowOnly()" (click)="lowOnly.set(!lowOnly())">Solo por reponer</button>
+    <button type="button" class="pill tall" [class.on]="lowOnly()" [attr.aria-pressed]="lowOnly()" (click)="toggleLow()">Solo por reponer</button>
   </div>
 
   <app-load-state [loading]="load.loading()" [error]="load.error()" />

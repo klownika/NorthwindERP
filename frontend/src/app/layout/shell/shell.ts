@@ -7,6 +7,7 @@ import { GlossyIconComponent, GlossyIconName } from '../../shared/ui/glossy-icon
 import { IconComponent } from '../../shared/ui/icon';
 import { ToastOutletComponent } from '../../shared/ui/toast';
 import { LowStockService } from '../low-stock.service';
+import { NotificationsComponent } from '../notifications/notifications';
 import { NAV, NavModule, PageData } from '../nav';
 import { PageService } from '../page.service';
 
@@ -15,7 +16,7 @@ const MINI_KEY = 'stockin.sidebar.mini';
 /** Estructura fija de la app: sidebar + header + franja DORfic + contenido de cada módulo. */
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, IconComponent, GlossyIconComponent, ToastOutletComponent],
+  imports: [RouterOutlet, RouterLink, IconComponent, GlossyIconComponent, NotificationsComponent, ToastOutletComponent],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
   host: { '(document:keydown.escape)': 'menuOpen.set(false)' },
