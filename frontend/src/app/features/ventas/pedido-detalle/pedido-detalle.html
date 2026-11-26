@@ -15,11 +15,11 @@
 <app-load-state [loading]="load.loading()" [error]="load.error()" />
 
 @if (detail(); as d) {
-  <div class="grid-auto" style="--min: 190px; gap: 12px">
+  <dl class="facts">
     @for (f of facts(); track f.label) {
-      <div class="card fact"><span>{{ f.label }}</span><strong>{{ f.value }}</strong></div>
+      <div class="fact"><dt>{{ f.label }}</dt><dd>{{ f.value }}</dd></div>
     }
-  </div>
+  </dl>
 
   <section class="stack" style="gap: 10px">
     <h2 class="section-title">Productos del pedido</h2>
