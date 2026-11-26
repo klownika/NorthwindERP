@@ -1,39 +1,8 @@
-<div class="filters">
-  <div class="fgroup" style="flex: 1 1 260px">
-    <label for="cq" class="lbl">Buscar producto</label>
-    <input id="cq" class="field" [(ngModel)]="q" placeholder="Nombre del producto" />
-  </div>
-  <div class="fgroup" style="flex: 0 1 260px">
+<app-catalog-browser [products]="products()" [categories]="categories()" [stock]="stock()" [warehouseId]="wh()"
+                     [loading]="load.loading()" [(query)]="q">
+  <div filters class="fgroup" style="flex: 0 1 260px">
     <label for="cw" class="lbl">Stock mostrado</label>
     <app-combobox inputId="cw" [options]="whOpts()" emptyLabel="Todos los almacenes" [emptyValue]="0" [ngModel]="wh()" (ngModelChange)="wh.set($event)" />
   </div>
-</div>
-
-<div class="cats" aria-label="Categorías">
-  <button type="button" class="pill" [class.on]="cat() === 0" [attr.aria-pressed]="cat() === 0" (click)="cat.set(0)">Todas</button>
-  @for (c of categories(); track c.categoryId) {
-    <button type="button" class="pill" [class.on]="cat() === c.categoryId" [attr.aria-pressed]="cat() === c.categoryId" (click)="cat.set(c.categoryId)">{{ c.categoryName }}</button>
-  }
-</div>
-
-<app-load-state [loading]="load.loading()" [error]="load.error()" />
-<app-pager [pager]="pager" />
-
-<div class="grid" (gridCols)="pager.resize(fullRows($event))">
-  @for (p of pager.rows(); track p.productId) {
-    <article class="card prod">
-      <div class="tile" [style.background]="p.tile">
-        <span class="abbr" [style.color]="p.ink">{{ p.abbr }}</span>
-        <span class="chip">{{ p.cname }}</span>
-      </div>
-      <div class="body">
-        <div class="row"><h3>{{ p.productName }}</h3><span class="price">{{ p.priceTxt }}</span></div>
-        <span class="muted">{{ p.unit }}</span>
-        <span class="sup">Proveedor: {{ p.supplierName ?? '—' }}</span>
-        <div class="foot"><span class="tag" [class.ok]="!p.low" [class.bad]="p.low">{{ p.stockTxt }}</span></div>
-      </div>
-    </article>
-  } @empty {
-    @if (!load.loading()) { <div class="card empty" style="grid-column: 1 / -1">No hay productos que coincidan con tu búsqueda.</div> }
-  }
-</div>
+  <app-load-state [loading]="load.loading()" [error]="load.error()" />
+</app-catalog-browser>

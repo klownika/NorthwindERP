@@ -1,0 +1,39 @@
+<div class="filters">
+  <div class="fgroup" style="flex: 1 1 260px">
+    <label [for]="searchId" class="lbl">Buscar producto</label>
+    <input [id]="searchId" class="field" [value]="query()" (input)="query.set($any($event.target).value)" placeholder="Nombre del producto" />
+  </div>
+  <ng-content select="[filters]" />
+</div>
+
+<div class="cats" role="group" aria-label="Categorías">
+  <button type="button" class="pill" [class.on]="cat() === 0" [attr.aria-pressed]="cat() === 0" (click)="cat.set(0)">Todas</button>
+  @for (c of categories(); track c.categoryId) {
+    <button type="button" class="pill" [class.on]="cat() === c.categoryId" [attr.aria-pressed]="cat() === c.categoryId" (click)="cat.set(c.categoryId)">{{ c.categoryName }}</button>
+  }
+</div>
+
+<ng-content />
+<app-pager [pager]="pager" />
+
+<div class="grid" (gridCols)="pager.resize(fullRows($event))">
+  @for (p of pager.rows(); track p.productId) {
+    <article class="card prod" [class.blocked]="p.blocked" [attr.aria-disabled]="p.blocked || null">
+      <div class="tile" [style.background]="p.tile">
+        <span class="abbr" [style.color]="p.ink">{{ p.abbr }}</span>
+        <span class="chip">{{ p.cname }}</span>
+      </div>
+      <div class="body">
+        <div class="row"><h3>{{ p.productName }}</h3><span class="price">{{ p.priceTxt }}</span></div>
+        <span class="muted">{{ p.unit }}</span>
+        <span class="sup">Proveedor: {{ p.supplierName ?? '—' }}</span>
+        <div class="foot">
+          <span class="tag" [class.ok]="!p.low && !p.blocked" [class.bad]="p.low || p.blocked">{{ p.stockTxt }}</span>
+          @if (cardFooter(); as tpl) { <ng-container *ngTemplateOutlet="tpl; context: { $implicit: p }" /> }
+        </div>
+      </div>
+    </article>
+  } @empty {
+    @if (!loading()) { <div class="card empty" style="grid-column: 1 / -1">No hay productos que coincidan con tu búsqueda.</div> }
+  }
+</div>

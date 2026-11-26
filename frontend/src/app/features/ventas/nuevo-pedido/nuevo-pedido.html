@@ -64,26 +64,29 @@
         <section class="card sec">
           <div class="row between">
             <h2>3 · Productos</h2>
-            <button type="button" class="ghost" (click)="addLine()">Agregar producto</button>
+            <button type="button" class="ghost" (click)="pickerOpen.set(true)">Agregar producto</button>
           </div>
-          @for (l of view(); track l.key) {
+          @for (l of view(); track l.productId) {
             <div class="line">
               <div class="fgroup span2">
-                <label [for]="'np' + l.key" class="lbl">Producto</label>
-                <app-combobox [inputId]="'np' + l.key" [name]="'np' + l.key" placeholder="Selecciona o escribe un producto" [options]="productOpts()"
-                              [ngModel]="l.productId" (ngModelChange)="patchLine(l.key, { productId: $event })" />
+                <span class="lbl">Producto</span>
+                <strong class="pname">{{ l.name }}</strong>
               </div>
               <div class="fgroup">
-                <label [for]="'nq' + l.key" class="lbl">Cantidad</label>
-                <input [id]="'nq' + l.key" class="field" type="number" min="1" max="10000" [name]="'nq' + l.key"
-                       [ngModel]="l.quantity" (ngModelChange)="patchLine(l.key, { quantity: +$event })" />
+                <span class="lbl">Cantidad</span>
+                <app-qty-stepper [value]="l.quantity" [min]="1" [max]="l.max" [label]="l.name" (valueChange)="setQty(l.productId, $event)" />
               </div>
               <div class="info">
                 <span>Disponible: <strong [style.color]="l.short ? '#991B1B' : '#166534'">{{ l.avail }}</strong></span>
                 <span>Precio: <strong>{{ l.price }}</strong></span>
                 <span>Línea: <strong style="color: var(--ink)">{{ money(l.total) }}</strong></span>
               </div>
-              @if (view().length > 1) { <button type="button" class="ghost" (click)="removeLine(l.key)" aria-label="Quitar producto">Quitar</button> }
+              <button type="button" class="ghost" (click)="removeLine(l.productId)" [attr.aria-label]="'Quitar ' + l.name">Quitar</button>
+            </div>
+          } @empty {
+            <div class="none">
+              <p>Todavía no agregaste productos al pedido.</p>
+              <button type="button" class="primary" (click)="pickerOpen.set(true)">Abrir catálogo</button>
             </div>
           }
         </section>
@@ -115,3 +118,7 @@
     <div class="sum"><span class="muted">Total estimado</span><strong>{{ money(total()) }}</strong></div>
   </aside>
 </div>
+
+<app-product-picker [open]="pickerOpen()" [products]="products()" [categories]="categories()" [stock]="stock()"
+                    [warehouseId]="warehouseId()" [warehouseName]="summary().warehouse" [initial]="selection()"
+                    (saved)="applySelection($event)" (cancelled)="pickerOpen.set(false)" />

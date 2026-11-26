@@ -4,22 +4,15 @@ import { ActivatedRoute } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { InventoryApi } from '../../../core/api/inventory.api';
 import { Category, Product, StockItem, Warehouse } from '../../../core/models/api.models';
-import { int, money, norm } from '../../../core/util/format';
 import { Loader } from '../../../shared/data/loader';
+import { CatalogBrowserComponent } from '../../../shared/catalog/catalog-browser';
 import { ComboOption, ComboboxComponent } from '../../../shared/ui/combobox';
 import { LoadStateComponent } from '../../../shared/ui/load-state';
-import { GridColsDirective } from '../../../shared/ui/grid-cols';
-import { Pager, PagerComponent, fullRows } from '../../../shared/ui/pager';
-
-const TILES: [string, string][] = [
-  ['#FFEDD5', '#9A3412'], ['#FEF3C7', '#92400E'], ['#FCE7F3', '#9D174D'], ['#E0F2FE', '#075985'],
-  ['#ECFCCB', '#3F6212'], ['#FEE2E2', '#991B1B'], ['#DCFCE7', '#166534'], ['#E0E7FF', '#3730A3'],
-];
 
 /** Catálogo de productos en tarjetas. Cada página llena filas completas según las columnas visibles. */
 @Component({
   selector: 'app-catalogo',
-  imports: [FormsModule, ComboboxComponent, GridColsDirective, LoadStateComponent, PagerComponent],
+  imports: [FormsModule, CatalogBrowserComponent, ComboboxComponent, LoadStateComponent],
   templateUrl: './catalogo.html',
   styleUrl: './catalogo.scss',
 })
@@ -34,30 +27,7 @@ export class CatalogoComponent {
   readonly whOpts = computed<ComboOption[]>(() => this.warehouses().map((w) => ({ value: w.warehouseId, label: w.warehouseName })));
 
   readonly q = signal(inject(ActivatedRoute).snapshot.queryParamMap.get('q') ?? '');
-  readonly cat = signal<number>(0);
   readonly wh = signal<number>(0);
-
-  readonly items = computed(() => {
-    const q = norm(this.q());
-    const w = this.wh();
-    return this.products()
-      .filter((p) => (!q || norm(p.productName).includes(q)) && (!this.cat() || p.categoryId === this.cat()))
-      .sort((a, b) => a.productName.localeCompare(b.productName))
-      .map((p) => {
-        const rows = this.stock().filter((s) => s.productId === p.productId && (!w || s.warehouseId === w));
-        const qty = rows.reduce((a, s) => a + s.quantity, 0);
-        const low = rows.some((s) => s.needsRestock);
-        const [tile, ink] = TILES[((p.categoryId ?? 1) - 1 + 8) % 8];
-        const cname = p.categoryName ?? '—';
-        return {
-          ...p, tile, ink, cname, priceTxt: money(p.price),
-          abbr: cname.replace(/[^A-Za-z]/g, '').slice(0, 3).toUpperCase(),
-          stockTxt: (w ? 'Stock: ' : 'Stock total: ') + int(qty) + ' u.' + (low ? ' · Reponer' : ''), low,
-        };
-      });
-  });
-  readonly pager = new Pager(this.items, 12);
-  readonly fullRows = fullRows;
 
   constructor() {
     this.load.run(
