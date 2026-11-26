@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { InventoryApi } from '../../../core/api/inventory.api';
 import { KardexEntry, KardexType, Warehouse } from '../../../core/models/api.models';
 import { fmtDateTime, int, norm } from '../../../core/util/format';
@@ -9,7 +10,10 @@ import { ComboOption, ComboboxComponent } from '../../../shared/ui/combobox';
 import { LoadStateComponent } from '../../../shared/ui/load-state';
 import { Pager, PagerComponent } from '../../../shared/ui/pager';
 
-/** Kardex (InventoryTransactions). Los filtros de almacén y tipo van a la API. */
+/**
+ * Kardex (InventoryTransactions). Los filtros de almacén y tipo van a la API.
+ * El almacén vive en la URL (?w=): Almacenes > Ver Kardex llega filtrado y el sidebar (sin ?w) muestra todos.
+ */
 @Component({
   selector: 'app-kardex',
   imports: [FormsModule, ComboboxComponent, RouterLink, LoadStateComponent, PagerComponent],
@@ -17,6 +21,8 @@ import { Pager, PagerComponent } from '../../../shared/ui/pager';
 })
 export class KardexComponent {
   private api = inject(InventoryApi);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   readonly load = new Loader();
   readonly rows = signal<KardexEntry[]>([]);
@@ -40,10 +46,15 @@ export class KardexComponent {
 
   constructor() {
     this.api.warehouses().subscribe({ next: (w) => this.warehouses.set(w) });
-    this.reload();
+    this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((m) => {
+      this.wh.set(Number(m.get('w')) || 0);
+      this.reload();
+    });
   }
 
-  setWh(v: number): void { this.wh.set(v); this.reload(); }
+  setWh(v: number): void {
+    this.router.navigate([], { relativeTo: this.route, queryParams: { w: v || null }, queryParamsHandling: 'merge', replaceUrl: true });
+  }
   setType(v: KardexType | null): void { this.type.set(v); this.reload(); }
 
   private reload(): void {

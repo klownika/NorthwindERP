@@ -14,7 +14,7 @@
       <span class="mgr">Responsable: <strong>{{ w.managerName }}</strong></span>
       <div class="btns">
         <a class="ghost" routerLink="/inventario/stock" [queryParams]="{ w: w.warehouseId }">Ver stock</a>
-        <a class="ghost" routerLink="/inventario/kardex">Ver Kardex</a>
+        <a class="ghost" routerLink="/inventario/kardex" [queryParams]="{ w: w.warehouseId }">Ver Kardex</a>
       </div>
     </article>
   }
