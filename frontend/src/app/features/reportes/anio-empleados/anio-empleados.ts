@@ -22,7 +22,7 @@ import { YEAR_COLORS } from '../../../shared/ui/palette';
       </div>
       <app-load-state [loading]="load.loading()" [error]="load.error()" />
       <app-kpi-grid [items]="kpis()" />
-      <app-column-chart title="Ventas por empleado y año" [groups]="groups()" [legend]="legend()" [height]="250" [minWidth]="720" [gap]="14" />
+      <app-column-chart title="Ventas por empleado y año" [groups]="groups()" [legend]="legend()" [height]="250" [minWidth]="720" [gap]="14" [tooltips]="true" />
       <h2 class="section-title">Ranking del año</h2>
       <section class="card" style="padding: 20px; display: flex; flex-direction: column; gap: 16px">
         @for (r of ranking(); track r.employeeId) {
@@ -75,6 +75,7 @@ export class AnioEmpleadosComponent {
         label: last ? `${first} ${last[0]}.` : first,
         bars: this.years().map((y, i) => ({
           value: e.sales.get(y) ?? 0, color: YEAR_COLORS[i % YEAR_COLORS.length], title: `${e.name} · ${y}: ${money(e.sales.get(y) ?? 0)}`,
+          tip: [e.name, `Año ${y}`, money(e.sales.get(y) ?? 0)],
         })),
       };
     });

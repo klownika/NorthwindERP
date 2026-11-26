@@ -168,4 +168,13 @@ code { font-family: var(--mono); }
 .alert.err { background: #fef2f2; border: 1px solid #fecaca; color: #7f1d1d; }
 .alert.ok { background: #f0fdf4; border: 1px solid #bbf7d0; color: #14532d; }
 
+/* ---------- tooltip (directiva appTooltip) ---------- */
+.app-tooltip {
+  position: fixed; z-index: 1000; display: flex; flex-direction: column; gap: 2px; max-width: 260px; padding: 8px 12px;
+  border: 1px solid #f2c4a0; border-radius: 10px; background: #fff; color: var(--ink-2); font-size: 13px; line-height: 1.35;
+  box-shadow: 0 12px 28px -14px rgba(124, 45, 18, .55); pointer-events: none;
+}
+.app-tooltip[hidden] { display: none; }
+.app-tooltip strong { color: var(--ink); font-size: 14px; }
+
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

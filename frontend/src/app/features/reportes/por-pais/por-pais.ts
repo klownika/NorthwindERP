@@ -4,15 +4,13 @@ import { CountrySales } from '../../../core/models/api.models';
 import { money, pct } from '../../../core/util/format';
 import { Loader } from '../../../shared/data/loader';
 import { ColumnChartComponent, ColumnGroup } from '../../../shared/ui/column-chart';
-import { DonutComponent, DonutPart } from '../../../shared/ui/donut';
 import { Kpi, KpiGridComponent } from '../../../shared/ui/kpi-grid';
 import { LoadStateComponent } from '../../../shared/ui/load-state';
-import { PALETTE } from '../../../shared/ui/palette';
 
-/** vw_sales_by_country: KPIs, dona, columnas y ranking. */
+/** vw_sales_by_country: KPIs, columnas con tooltip y ranking. */
 @Component({
   selector: 'app-por-pais',
-  imports: [KpiGridComponent, DonutComponent, ColumnChartComponent, LoadStateComponent],
+  imports: [KpiGridComponent, ColumnChartComponent, LoadStateComponent],
   templateUrl: './por-pais.html',
 })
 export class PorPaisComponent {
@@ -32,16 +30,13 @@ export class PorPaisComponent {
       { label: 'Top 3 países', value: (this.total() ? (top3 / this.total()) * 100 : 0).toFixed(1) + '% de las ventas' },
     ];
   });
-  readonly parts = computed<DonutPart[]>(() => {
-    const s = this.sorted();
-    const top = s.slice(0, 6).map((x, i) => ({ label: x.country ?? '—', value: x.totalSales, color: PALETTE[i] }));
-    const rest = s.slice(6).reduce((a, x) => a + x.totalSales, 0);
-    return rest > 0 ? [...top, { label: `Otros (${s.length - 6} países)`, value: rest, color: PALETTE[6] }] : top;
-  });
   readonly columns = computed<ColumnGroup[]>(() =>
     this.sorted().map((x, i) => ({
       label: x.country ?? '—',
-      bars: [{ value: x.totalSales, title: `${x.country}: ${money(x.totalSales)}`, color: i < 3 ? '#C2410C' : i < 8 ? '#F97316' : '#FDBA74' }],
+      bars: [{
+        value: x.totalSales, title: `${x.country}: ${money(x.totalSales)}`, color: i < 3 ? '#C2410C' : i < 8 ? '#F97316' : '#FDBA74',
+        tip: [x.country ?? '—', money(x.totalSales), `${pct(x.totalSales, this.total())} del total`],
+      }],
     })),
   );
   readonly ranking = computed(() => {

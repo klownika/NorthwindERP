@@ -1,11 +1,7 @@
 <div class="stack">
   <app-load-state [loading]="load.loading()" [error]="load.error()" />
   <app-kpi-grid [items]="kpis()" />
-  <div class="grid-auto" style="--min: 420px">
-    <app-donut title="Participación por país" [parts]="parts()" [centerValue]="'' + sorted().length" centerLabel="países con ventas"
-               ariaLabel="Gráfico de dona: participación de cada país en las ventas" />
-    <app-column-chart title="Ventas por país" [groups]="columns()" [height]="230" [gap]="6" [verticalLabels]="true" />
-  </div>
+  <app-column-chart title="Ventas por país" [groups]="columns()" [height]="260" [gap]="8" [verticalLabels]="true" [tooltips]="true" />
   <h2 class="section-title">Ranking de países</h2>
   <section class="card" style="padding: 20px; display: flex; flex-direction: column; gap: 14px">
     @for (r of ranking(); track r.country) {
