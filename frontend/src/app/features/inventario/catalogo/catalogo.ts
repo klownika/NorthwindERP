@@ -8,17 +8,18 @@ import { int, money, norm } from '../../../core/util/format';
 import { Loader } from '../../../shared/data/loader';
 import { ComboOption, ComboboxComponent } from '../../../shared/ui/combobox';
 import { LoadStateComponent } from '../../../shared/ui/load-state';
-import { Pager, PagerComponent } from '../../../shared/ui/pager';
+import { GridColsDirective } from '../../../shared/ui/grid-cols';
+import { Pager, PagerComponent, fullRows } from '../../../shared/ui/pager';
 
 const TILES: [string, string][] = [
   ['#FFEDD5', '#9A3412'], ['#FEF3C7', '#92400E'], ['#FCE7F3', '#9D174D'], ['#E0F2FE', '#075985'],
   ['#ECFCCB', '#3F6212'], ['#FEE2E2', '#991B1B'], ['#DCFCE7', '#166534'], ['#E0E7FF', '#3730A3'],
 ];
 
-/** Catálogo de productos en tarjetas, 8 por página. */
+/** Catálogo de productos en tarjetas. Cada página llena filas completas según las columnas visibles. */
 @Component({
   selector: 'app-catalogo',
-  imports: [FormsModule, ComboboxComponent, LoadStateComponent, PagerComponent],
+  imports: [FormsModule, ComboboxComponent, GridColsDirective, LoadStateComponent, PagerComponent],
   templateUrl: './catalogo.html',
   styleUrl: './catalogo.scss',
 })
@@ -55,7 +56,8 @@ export class CatalogoComponent {
         };
       });
   });
-  readonly pager = new Pager(this.items, 8);
+  readonly pager = new Pager(this.items, 12);
+  readonly fullRows = fullRows;
 
   constructor() {
     this.load.run(

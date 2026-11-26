@@ -19,7 +19,7 @@
 <app-load-state [loading]="load.loading()" [error]="load.error()" />
 <app-pager [pager]="pager" />
 
-<div class="grid">
+<div class="grid" (gridCols)="pager.resize(fullRows($event))">
   @for (p of pager.rows(); track p.productId) {
     <article class="card prod">
       <div class="tile" [style.background]="p.tile">
