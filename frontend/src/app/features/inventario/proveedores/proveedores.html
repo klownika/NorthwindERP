@@ -1,7 +1,20 @@
 <div class="stack">
-  <div class="fgroup" style="max-width: 420px">
-    <label for="pq" class="lbl">Buscar proveedor</label>
-    <input id="pq" class="field" [(ngModel)]="q" placeholder="Nombre, ciudad o país" />
+  <div class="filters">
+    <div class="fgroup" style="flex: 1 1 260px; max-width: 420px">
+      <label for="pq" class="lbl">Buscar proveedor</label>
+      <input id="pq" class="field" [(ngModel)]="q" placeholder="Nombre, ciudad o país" />
+    </div>
+    <div class="fgroup" style="flex: 0 1 220px">
+      <label for="pc" class="lbl">País</label>
+      <app-combobox inputId="pc" [options]="countryOpts()" emptyLabel="Todos los países" emptyValue=""
+                    [ngModel]="country()" (ngModelChange)="setCountry($event)" />
+    </div>
+    <div class="fgroup" style="flex: 0 1 220px">
+      <label for="pci" class="lbl">Ciudad</label>
+      <app-combobox inputId="pci" [options]="cityOpts()" [emptyLabel]="country() ? 'Todas las ciudades' : null" emptyValue=""
+                    placeholder="Elige un país primero" [disabled]="!country()" [ngModel]="city()" (ngModelChange)="city.set($event)" />
+    </div>
+    <button type="button" class="ghost" style="min-height: 44px" [disabled]="!hasFilters()" (click)="clearFilters()">Limpiar filtros</button>
   </div>
   <app-load-state [loading]="load.loading()" [error]="load.error()" />
   <app-pager [pager]="pager" />
